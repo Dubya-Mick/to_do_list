@@ -7,8 +7,8 @@ const logicController = (() => {
         return {title, tasks};
     }
 
-    const taskFactory = (title, description, notes, isComplete) => {
-        return {title, description, notes, isComplete};
+    const taskFactory = (title, notes, isComplete) => {
+        return {title, notes, isComplete};
     }
 
     const addProject = (title) => {
@@ -21,17 +21,14 @@ const logicController = (() => {
     }
 
 
-    const addTask = (projectIndex, title, description, notes, isComplete) => {
-        projects[projectIndex].tasks.push(taskFactory(title, description, notes, isComplete));
+    const addTask = (projectIndex, title, notes, isComplete) => {
+        projects[projectIndex].tasks.push(taskFactory(title, notes, isComplete));
     }
 
     const editTaskTitle = (projectIndex, taskIndex, title) => {
             projects[projectIndex].tasks[taskIndex].title = title;
     }
 
-    const editTaskDesc = (projectIndex, taskIndex, description) => {
-        project[projectIndex].tasks[taskIndex].description = description;
-    }
 
     const editTaskNotes = (projectIndex, taskIndex, notes) => {
         project[projectIndex].tasks[taskIndex].notes = notes;
@@ -51,7 +48,6 @@ const logicController = (() => {
         editProject,
         addTask,
         editTaskTitle,
-        editTaskDesc,
         editTaskNotes,
         toggleComplete
     }

@@ -12,4 +12,4 @@ logicController.addTask(2, 'go to school', 'learning is good', 'need to get an A
 console.log(logicController.projects[0].title);
 console.log(logicController.projects[1].tasks[0]);
 
-DOMController.renderProjects();
+DOMController.renderProjectTitles();
