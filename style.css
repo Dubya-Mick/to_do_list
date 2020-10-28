@@ -2,6 +2,8 @@ body {
     font-family: 'Raleway', sans-serif;
 }
 
+
+
 #projectList {
     display: flex;
     flex-direction: column;
@@ -20,7 +22,24 @@ body {
     margin: 2vh auto;
 }
 
+
 #projTitle {
     text-align: center;
     font-size: 2rem;
+}
+
+.task {
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+.taskDetails {
+    font-size: 1rem;
+    margin-left: 1rem;
+    cursor: auto;
+}
+
+
+.hidden {
+    display: none;
 }
