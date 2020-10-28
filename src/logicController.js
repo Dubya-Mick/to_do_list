@@ -1,5 +1,8 @@
 const logicController = (() => {
 
+    let currentProject = null;
+    let currentTask = null;
+
     let projects = [];
 
     const projectFactory = (title) => {
@@ -21,12 +24,29 @@ const logicController = (() => {
     }
 
 
+    const setCurrentProject = (index) => {
+        currentProject = projects[index];
+    }
+
+    const getCurrentProjectIndex = () => {
+        return projects.indexOf(currentProject);
+    }
+
+
+    const setCurrentTask = (index) => {
+        currentTask = currentProject.tasks[index];
+    }
+
+    const getCurrentTaskIndex = () => {
+        return currentProject.tasks.indexOf(currentTask);
+    }
+
     const addTask = (projectIndex, title, notes, isComplete) => {
         projects[projectIndex].tasks.push(taskFactory(title, notes, isComplete));
     }
 
     const editTaskTitle = (projectIndex, taskIndex, title) => {
-            projects[projectIndex].tasks[taskIndex].title = title;
+        projects[projectIndex].tasks[taskIndex].title = title;
     }
 
 
@@ -44,6 +64,10 @@ const logicController = (() => {
 
     return {
         projects,
+        setCurrentProject,
+        getCurrentProjectIndex,
+        setCurrentTask,
+        getCurrentTaskIndex,
         addProject,
         editProject,
         addTask,

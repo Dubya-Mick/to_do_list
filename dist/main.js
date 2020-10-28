@@ -1,11 +1,3 @@
-/*
- * ATTENTION: The "eval" devtool has been used (maybe by default in mode: "development").
- * This devtool is not neither made for production nor for readable output files.
- * It uses "eval()" calls to create a separate source file in the browser devtools.
- * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
- * or disable the default devtool with "devtool: false".
- * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
- */
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -20,7 +12,128 @@
 /*! runtime requirements: __webpack_require__, __webpack_exports__, __webpack_require__.r, __webpack_require__.d, __webpack_require__.* */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => __WEBPACK_DEFAULT_EXPORT__\n/* harmony export */ });\n/* harmony import */ var _logicController__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./logicController */ \"./src/logicController.js\");\n\n\nconst DOMController = (() => {\n\n    const renderProjectTitles = () => {\n        let testDiv = document.getElementById('projectList');\n        let allProjectTitles = document.createDocumentFragment();\n        for(let i= 0; i < _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects.length; i++) {\n            let projectTitle = document.createElement('ul');\n            projectTitle.setAttribute('data-projNum', `${i}`);\n            projectTitle.textContent = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[i].title;\n            projectTitle.addEventListener('click', (e) => {\n                renderTaskTitles(e);\n            })\n            allProjectTitles.appendChild(projectTitle);\n        }\n        testDiv.appendChild(allProjectTitles);\n    }\n\n    const renderTaskTitles = (e) => {\n        let projectIndex = e.target.getAttribute('data-projNum');\n        let projTitleDisplay = document.querySelector('#projTitle');\n        projTitleDisplay.textContent = e.target.textContent;\n        let taskList = document.querySelector('#taskList');\n        clearDisplay(taskList);\n        \n\n        let allTaskTitles = document.createDocumentFragment();\n        for(let i = 0; i < _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks.length; i++) {\n            let taskTitle = document.createElement('div');\n            taskTitle.textContent = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[i].title;\n            taskTitle.setAttribute('data-taskNum', `${i}`);\n            allTaskTitles.appendChild(taskTitle);\n        }\n        taskList.appendChild(allTaskTitles);\n\n    }\n\n    const clearDisplay = (parent) => {\n        while (parent.firstChild) {\n            parent.removeChild(parent.firstChild)\n        }\n    \n    }\n    \n\n    return {\n        renderProjectTitles\n    }\n\n})();\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DOMController);\n\n//# sourceURL=webpack://to_do_list/./src/DOMcontroller.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => __WEBPACK_DEFAULT_EXPORT__
+/* harmony export */ });
+/* harmony import */ var _logicController__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./logicController */ "./src/logicController.js");
+
+
+const DOMController = (() => {
+
+    const renderProjectTitles = () => {
+        //grab div containing list of projects
+        let projList = document.getElementById('projectList');
+        let allProjectTitles = document.createDocumentFragment();
+
+        //render those project titles to the DOM
+        //adding event listeners as the divs are added
+        for(let i= 0; i < _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects.length; i++) {
+            let projectTitle = document.createElement('ul');
+            projectTitle.setAttribute('data-projNum', `${i}`);
+            projectTitle.textContent = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[i].title;
+            projectTitle.classList.add('project');
+            projectTitle.addEventListener('click', (e) => {
+                setCurrentProjectOnClick(e);
+                displayActiveProject(e);
+                renderTaskTitles(e);
+                
+            });
+            allProjectTitles.appendChild(projectTitle);
+        }
+        projList.appendChild(allProjectTitles);
+    }
+
+    const renderTaskTitles = (e) => {
+        //grab tasklist div
+        let taskList = document.querySelector('#taskList');
+        //grab index of project 
+        let projectIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
+        //clear previous task list before rendering new one
+        clearDisplay(taskList);
+        
+        //render current task titles (shown) and task details (hidden)
+        let tasksAndDeets = document.createDocumentFragment();
+        for(let i = 0; i < _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks.length; i++) {
+            //title of tasks
+            let taskTitle = document.createElement('div');
+            taskTitle.textContent = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[i].title;
+            taskTitle.setAttribute('data-taskNum', `${i}`);
+            taskTitle.classList.add('task');
+            taskTitle.addEventListener('click', (e) => {
+                //prevent children from inheriting the onclick event
+                if (e.currentTarget !== e.target) {
+                    return;
+                }
+                setCurrentTaskOnClick(e);
+                renderTaskDetails(e);
+            });
+
+            //task notes
+            let notes = document.createElement('div');
+            notes.textContent = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[i].notes;
+
+            //task completion y/n
+            let isComplete = document.createElement('div');
+            isComplete.textContent = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[i].isComplete;
+
+            //wrapper for task details
+            let taskDetails = document.createElement('div');
+            taskDetails.classList.add('taskDetails');
+            taskDetails.classList.add('hidden');
+            taskDetails.appendChild(notes);
+            taskDetails.appendChild(isComplete);
+
+            //add task title and info to DOM
+            taskTitle.appendChild(taskDetails);
+            tasksAndDeets.appendChild(taskTitle);
+
+        }
+        taskList.appendChild(tasksAndDeets);
+
+    }
+
+    const displayActiveProject = (e) => {
+         //display title of project above task list
+         let projTitleDisplay = document.querySelector('#projTitle');
+         projTitleDisplay.textContent = e.target.textContent;
+    }
+
+    const renderTaskDetails = (e) => {
+        let taskDeets = e.target.querySelector('.taskDetails');
+        taskDeets.classList.toggle('hidden');
+        
+    }
+
+    //sets the current project for later retrieval of index
+    const setCurrentProjectOnClick = (e) => {
+        let projectIndex = e.target.getAttribute('data-projNum');
+        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.setCurrentProject(projectIndex);
+    }
+
+    //sets the current task for later retrieval of index
+    const setCurrentTaskOnClick = (e) => {
+        let taskIndex = e.target.getAttribute('data-taskNum');
+        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.setCurrentTask(taskIndex);
+    }
+
+
+
+    const clearDisplay = (parent) => {
+        while (parent.firstChild) {
+            parent.removeChild(parent.firstChild)
+        }
+    
+    }
+    
+
+    return {
+        renderProjectTitles
+    }
+
+})();
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DOMController);
 
 /***/ }),
 
@@ -33,7 +146,21 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /*! runtime requirements: __webpack_require__, __webpack_require__.r, __webpack_exports__, __webpack_require__.* */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _DOMcontroller__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DOMcontroller */ \"./src/DOMcontroller.js\");\n/* harmony import */ var _logicController__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./logicController */ \"./src/logicController.js\");\n\n\n\n_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addProject('daily living');\n_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addTask(0, 'take a dump', 'I have to do this', 'it will take an hour', false);\n_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addTask(0, 'get out of bed', 'No choice', 'no news readng in bed', false);\n_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addProject('life goals');\n_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addTask(1, 'party a lot', 'drinking is good', 'maybe beer', false);\n_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addProject('obligations');\n_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addTask(2, 'go to school', 'learning is good', 'need to get an A', false);\n\nconsole.log(_logicController__WEBPACK_IMPORTED_MODULE_1__.default.projects[0].title);\nconsole.log(_logicController__WEBPACK_IMPORTED_MODULE_1__.default.projects[1].tasks[0]);\n\n_DOMcontroller__WEBPACK_IMPORTED_MODULE_0__.default.renderProjectTitles();\n\n//# sourceURL=webpack://to_do_list/./src/index.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _DOMcontroller__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DOMcontroller */ "./src/DOMcontroller.js");
+/* harmony import */ var _logicController__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./logicController */ "./src/logicController.js");
+
+
+
+_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addProject('daily living');
+_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addTask(0, 'take a dump', 'I have to do this', false);
+_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addTask(0, 'get out of bed', 'No choice', false);
+_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addProject('life goals');
+_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addTask(1, 'party a lot', 'drinking is good', false);
+_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addProject('obligations');
+_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addTask(2, 'go to school', 'learning is good', false);
+
+_DOMcontroller__WEBPACK_IMPORTED_MODULE_0__.default.renderProjectTitles();
 
 /***/ }),
 
@@ -47,7 +174,92 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _DOM
 /*! runtime requirements: __webpack_exports__, __webpack_require__.r, __webpack_require__.d, __webpack_require__.* */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => __WEBPACK_DEFAULT_EXPORT__\n/* harmony export */ });\nconst logicController = (() => {\n\n    let projects = [];\n\n    const projectFactory = (title) => {\n        let tasks = [];\n        return {title, tasks};\n    }\n\n    const taskFactory = (title, notes, isComplete) => {\n        return {title, notes, isComplete};\n    }\n\n    const addProject = (title) => {\n        projects.push(projectFactory(title));\n\n    }\n\n    const editProject = (projectIndex, title) => {\n        projects[projectIndex].title = title;\n    }\n\n\n    const addTask = (projectIndex, title, notes, isComplete) => {\n        projects[projectIndex].tasks.push(taskFactory(title, notes, isComplete));\n    }\n\n    const editTaskTitle = (projectIndex, taskIndex, title) => {\n            projects[projectIndex].tasks[taskIndex].title = title;\n    }\n\n\n    const editTaskNotes = (projectIndex, taskIndex, notes) => {\n        project[projectIndex].tasks[taskIndex].notes = notes;\n    }\n\n    const toggleComplete = (projectIndex, taskIndex) => {\n        if (project[projectIndex].tasks[taskIndex].isComplete) {\n            project[projectIndex].tasks[taskIndex].isComplete = false;\n        } else {\n            project[projectIndex].tasks[taskIndex].isComplete = true;\n        }\n    }\n\n    return {\n        projects,\n        addProject,\n        editProject,\n        addTask,\n        editTaskTitle,\n        editTaskNotes,\n        toggleComplete\n    }\n\n})();\n\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (logicController);\n\n//# sourceURL=webpack://to_do_list/./src/logicController.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => __WEBPACK_DEFAULT_EXPORT__
+/* harmony export */ });
+const logicController = (() => {
+
+    let currentProject = null;
+    let currentTask = null;
+
+    let projects = [];
+
+    const projectFactory = (title) => {
+        let tasks = [];
+        return {title, tasks};
+    }
+
+    const taskFactory = (title, notes, isComplete) => {
+        return {title, notes, isComplete};
+    }
+
+    const addProject = (title) => {
+        projects.push(projectFactory(title));
+
+    }
+
+    const editProject = (projectIndex, title) => {
+        projects[projectIndex].title = title;
+    }
+
+
+    const setCurrentProject = (index) => {
+        currentProject = projects[index];
+    }
+
+    const getCurrentProjectIndex = () => {
+        return projects.indexOf(currentProject);
+    }
+
+
+    const setCurrentTask = (index) => {
+        currentTask = currentProject.tasks[index];
+    }
+
+    const getCurrentTaskIndex = () => {
+        return currentProject.tasks.indexOf(currentTask);
+    }
+
+    const addTask = (projectIndex, title, notes, isComplete) => {
+        projects[projectIndex].tasks.push(taskFactory(title, notes, isComplete));
+    }
+
+    const editTaskTitle = (projectIndex, taskIndex, title) => {
+        projects[projectIndex].tasks[taskIndex].title = title;
+    }
+
+
+    const editTaskNotes = (projectIndex, taskIndex, notes) => {
+        project[projectIndex].tasks[taskIndex].notes = notes;
+    }
+
+    const toggleComplete = (projectIndex, taskIndex) => {
+        if (project[projectIndex].tasks[taskIndex].isComplete) {
+            project[projectIndex].tasks[taskIndex].isComplete = false;
+        } else {
+            project[projectIndex].tasks[taskIndex].isComplete = true;
+        }
+    }
+
+    return {
+        projects,
+        setCurrentProject,
+        getCurrentProjectIndex,
+        setCurrentTask,
+        getCurrentTaskIndex,
+        addProject,
+        editProject,
+        addTask,
+        editTaskTitle,
+        editTaskNotes,
+        toggleComplete
+    }
+
+})();
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (logicController);
 
 /***/ })
 
@@ -112,3 +324,4 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 	// This entry module used 'exports' so it can't be inlined
 /******/ })()
 ;
+//# sourceMappingURL=main.js.map
