@@ -5,12 +5,14 @@ const DOMController = (() => {
     const renderProjectTitles = () => {
         //grab div containing list of projects
         let projList = document.getElementById('projectList');
+        //clear display before repopulating
+        clearDisplay(projList);
+        
         let allProjectTitles = document.createDocumentFragment();
-
         //render those project titles to the DOM
         //adding event listeners as the divs are added
         for(let i= 0; i < logicController.projects.length; i++) {
-            let projectTitle = document.createElement('ul');
+            let projectTitle = document.createElement('div');
             projectTitle.setAttribute('data-projNum', `${i}`);
             projectTitle.textContent = logicController.projects[i].title;
             projectTitle.classList.add('project');
@@ -18,6 +20,7 @@ const DOMController = (() => {
                 setCurrentProjectOnClick(e);
                 displayActiveProject(e);
                 renderTaskTitles(e);
+                renderAddTaskBtn();
                 
             });
             allProjectTitles.appendChild(projectTitle);
@@ -50,15 +53,15 @@ const DOMController = (() => {
                 renderTaskDetails(e);
             });
 
-            //task notes
+            //create div for task notes
             let notes = document.createElement('div');
             notes.textContent = logicController.projects[projectIndex].tasks[i].notes;
 
-            //task completion y/n
+            //create div task completion y/n
             let isComplete = document.createElement('div');
             isComplete.textContent = logicController.projects[projectIndex].tasks[i].isComplete;
 
-            //wrapper for task details
+            //create wrapper for task details
             let taskDetails = document.createElement('div');
             taskDetails.classList.add('taskDetails');
             taskDetails.classList.add('hidden');
@@ -81,8 +84,17 @@ const DOMController = (() => {
     }
 
     const renderTaskDetails = (e) => {
-        let taskDeets = e.target.querySelector('.taskDetails');
-        taskDeets.classList.toggle('hidden');
+        let allTaskDeets = document.querySelectorAll('.taskDetails');
+        //close the opened task when you click on a new one
+        allTaskDeets.forEach((element) => {
+            if (!element.classList.contains('hidden')) {
+                element.classList.add('hidden')
+            }
+        });
+
+        //open the clicked task
+        let clickedTaskDeets = e.target.querySelector('.taskDetails');
+        clickedTaskDeets.classList.toggle('hidden');
         
     }
 
@@ -98,7 +110,36 @@ const DOMController = (() => {
         logicController.setCurrentTask(taskIndex);
     }
 
+    const renderAddTaskBtn = () => {
+        let taskArea = document.querySelector('#taskList');
+        let addTaskBtn = document.createElement('button');
+        addTaskBtn.textContent = '+';
+        addTaskBtn.setAttribute('id', 'addTaskBtn');
+        taskArea.appendChild(addTaskBtn);
+    }
 
+    const addProjectDropDown = () => {
+        let projDropDown = document.querySelector('.addProjMenu');
+        let addProjBtn = document.querySelector('.addProjBtn');
+        addProjBtn.addEventListener('click', () => {
+            projDropDown.classList.toggle('show');
+        })
+        
+    }
+
+    const addNewProject = () => {
+        let addProjDropBtn = document.querySelector('#addProjDropDownBtn');
+        addProjDropBtn.addEventListener('click', () => {
+            let newProjTitle = document.querySelector("#proj-title-input").value;
+            if(newProjTitle.length > 30) {
+                return
+            } else {
+                logicController.addProject(newProjTitle);
+                renderProjectTitles();
+            }
+        })
+        
+    }
 
     const clearDisplay = (parent) => {
         while (parent.firstChild) {
@@ -107,9 +148,14 @@ const DOMController = (() => {
     
     }
     
+    const renderDOM = () => {
+        renderProjectTitles();
+        addProjectDropDown();
+        addNewProject();
+    }
 
     return {
-        renderProjectTitles
+        renderDOM
     }
 
 })();

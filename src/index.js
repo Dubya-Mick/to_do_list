@@ -9,4 +9,4 @@ logicController.addTask(1, 'party a lot', 'drinking is good', false);
 logicController.addProject('obligations');
 logicController.addTask(2, 'go to school', 'learning is good', false);
 
-DOMController.renderProjectTitles();
+DOMController.renderDOM();
