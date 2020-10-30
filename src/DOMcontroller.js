@@ -19,16 +19,14 @@ const DOMController = (() => {
             projectTitle.addEventListener('click', (e) => {
                 setCurrentProjectOnClick(e);
                 displayActiveProject(e);
-                renderTaskTitles(e);
-                renderAddTaskBtn();
-                
+                renderTasks(e);
             });
             allProjectTitles.appendChild(projectTitle);
         }
         projList.appendChild(allProjectTitles);
     }
 
-    const renderTaskTitles = (e) => {
+    const renderTasks = () => {
         //grab tasklist div
         let taskList = document.querySelector('#taskList');
         //grab index of project 
@@ -74,6 +72,7 @@ const DOMController = (() => {
 
         }
         taskList.appendChild(tasksAndDeets);
+        renderAddTaskBtn();
 
     }
 
@@ -85,17 +84,14 @@ const DOMController = (() => {
 
     const renderTaskDetails = (e) => {
         let allTaskDeets = document.querySelectorAll('.taskDetails');
-        //close the opened task when you click on a new one
+        //close opened tasks when you click on a new one
         allTaskDeets.forEach((element) => {
-            if (!element.classList.contains('hidden')) {
-                element.classList.add('hidden')
-            }
+            element.classList.add('hidden');
         });
 
         //open the clicked task
         let clickedTaskDeets = e.target.querySelector('.taskDetails');
         clickedTaskDeets.classList.toggle('hidden');
-        
     }
 
     //sets the current project for later retrieval of index
@@ -116,6 +112,8 @@ const DOMController = (() => {
         addTaskBtn.textContent = '+';
         addTaskBtn.setAttribute('id', 'addTaskBtn');
         taskArea.appendChild(addTaskBtn);
+        addTaskModalOpen();
+        addTaskModalClose();
     }
 
     const addProjectDropDown = () => {
@@ -138,7 +136,33 @@ const DOMController = (() => {
                 renderProjectTitles();
             }
         })
-        
+    }
+
+    const addTaskModalOpen = () => {
+        let addTaskModalBtn = document.getElementById('addTaskBtn');
+        let addTaskModal = document.getElementById('addTaskModal');
+        addTaskModalBtn.addEventListener('click', () => {
+            addTaskModal.style.display = 'block';
+        })
+    }
+
+    const addTaskModalClose = () => {
+        window.onclick = (e) => {
+            let addTaskModal = document.getElementById('addTaskModal');
+            if (e.target == addTaskModal) {
+                addTaskModal.style.display = 'none';
+            }
+        }
+    }
+
+    const addTask = () => {
+        let addTaskModalBtn = document.getElementById('addTaskModalBtn');
+        addTaskModalBtn.addEventListener('click', () => {
+            let taskTitleInput = document.getElementById('task-title-input').value;
+            let taskNotesInput = document.getElementById('task-notes-input').value;
+            logicController.addTask(logicController.getCurrentProjectIndex(), taskTitleInput, taskNotesInput, false);
+            renderTasks();
+        })
     }
 
     const clearDisplay = (parent) => {
@@ -152,6 +176,7 @@ const DOMController = (() => {
         renderProjectTitles();
         addProjectDropDown();
         addNewProject();
+        addTask();
     }
 
     return {
