@@ -23,6 +23,10 @@ const logicController = (() => {
         projects[projectIndex].title = title;
     }
 
+    const deleteProject = (projectIndex) => {
+        projects.splice(projectIndex, 1);
+    }
+
 
     const setCurrentProject = (index) => {
         currentProject = projects[index];
@@ -32,7 +36,6 @@ const logicController = (() => {
         return projects.indexOf(currentProject);
     }
 
-
     const setCurrentTask = (index) => {
         currentTask = currentProject.tasks[index];
     }
@@ -41,12 +44,17 @@ const logicController = (() => {
         return currentProject.tasks.indexOf(currentTask);
     }
 
+
     const addTask = (projectIndex, title, notes, isComplete) => {
         projects[projectIndex].tasks.push(taskFactory(title, notes, isComplete));
     }
 
     const editTaskTitle = (projectIndex, taskIndex, title) => {
         projects[projectIndex].tasks[taskIndex].title = title;
+    }
+
+    const deleteTask = (projectIndex, taskIndex) => {
+        projects[projectIndex].tasks.splice(taskIndex, 1);
     }
 
 
@@ -70,10 +78,12 @@ const logicController = (() => {
         getCurrentTaskIndex,
         addProject,
         editProject,
+        deleteProject,
         addTask,
         editTaskTitle,
+        deleteTask,
         editTaskNotes,
-        toggleComplete
+        toggleComplete,
     }
 
 })();
