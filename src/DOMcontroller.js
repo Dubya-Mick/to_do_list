@@ -111,7 +111,6 @@ const DOMController = (() => {
             editTaskButton.addEventListener('click', (e) => {
                 setCurrentTaskOnClick(e);
                 editTaskModalOpen();
-                addTaskModelOpen();
             })
 
             //create div for delete button
@@ -158,6 +157,8 @@ const DOMController = (() => {
         logicController.setCurrentProject(projectIndex);
     }
 
+
+
     //sets the current task for later retrieval of index
     const setCurrentTaskOnClick = (e) => {
         let taskIndex = e.target.getAttribute('data-taskNum');
@@ -172,7 +173,7 @@ const DOMController = (() => {
         addTaskBtn.textContent = '+';
         addTaskBtn.setAttribute('id', 'addTaskBtn');
         //add event listener for btn to open modal window on click
-        addTaskBtn.addEventListener('click', addTaskModelOpen)
+        addTaskBtn.addEventListener('click', addTaskModalOpen);
 
         if (document.querySelector('#addTaskBtn') != null) {
             return
@@ -273,9 +274,20 @@ const DOMController = (() => {
         }
     }
 
-    const addTaskModelOpen = () => {
+    const addTaskModalOpen = () => {
         let addTaskModal = document.getElementById('addTaskModal');
         addTaskModal.style.display = 'block';
+        //change modal window text to reflect add task mode
+        let addTaskTitle = document.getElementById('add-task-title');
+        addTaskTitle.textContent = 'Title of New Task';
+        let addTaskNotes = document.getElementById('add-task-notes');
+        addTaskNotes.textContent = 'Notes';
+        let addTaskModalBtn = document.getElementById('addTaskModalBtn');
+        addTaskModalBtn.textContent = "Add Task";
+
+        addTaskModalBtn.removeEventListener('click', editTask);
+        addTaskModalBtn.addEventListener('click', addTask);
+
         addTaskModalClose();
     }
 
@@ -305,7 +317,7 @@ const DOMController = (() => {
         }
     }
 
-    //controls adding of tasks using button in modal window
+    
     const addTaskEventListener = () => {
         let addTaskModalBtn = document.getElementById('addTaskModalBtn');
         addTaskModalBtn.addEventListener('click', addTask);
@@ -337,6 +349,8 @@ const DOMController = (() => {
     
     //change the modal window for adding tasks into one for editing tasks
     const editTaskModalOpen = () => {
+        let addTaskModal = document.getElementById('addTaskModal');
+        addTaskModal.style.display = 'block';
         //grab current indices
         let projectIndex = logicController.getCurrentProjectIndex();
         let taskIndex = logicController.getCurrentTaskIndex();
@@ -361,8 +375,6 @@ const DOMController = (() => {
     
 
     const toggleTaskComplete = (e) => {
-        let test = e.target;
-        let test2 = e.currentTarget;
         let projectIndex = logicController.getCurrentProjectIndex();
         let taskIndex = e.target.getAttribute('data-taskNum');
         logicController.toggleComplete(projectIndex, taskIndex);
@@ -374,12 +386,18 @@ const DOMController = (() => {
             parent.removeChild(parent.firstChild)
         }
     }
+
+    const setTutorialProject = () => {
+        logicController.addProject('Example Project');
+        logicController.setCurrentProject(0);
+        logicController.addTask(0, 'Example Task: Click me!', 'Use the edit and delete buttons to update your tasks');
+    }
     
     const renderDOM = () => {
+        setTutorialProject();
         renderProjectArea();
         addProjectDropDownEventListener();
         addNewProjectEventListener();
-        addTaskEventListener();
     }
 
     return {
