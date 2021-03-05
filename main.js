@@ -130,7 +130,6 @@ const DOMController = (() => {
             editTaskButton.addEventListener('click', (e) => {
                 setCurrentTaskOnClick(e);
                 editTaskModalOpen();
-                addTaskModelOpen();
             })
 
             //create div for delete button
@@ -177,6 +176,8 @@ const DOMController = (() => {
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.setCurrentProject(projectIndex);
     }
 
+
+
     //sets the current task for later retrieval of index
     const setCurrentTaskOnClick = (e) => {
         let taskIndex = e.target.getAttribute('data-taskNum');
@@ -191,7 +192,7 @@ const DOMController = (() => {
         addTaskBtn.textContent = '+';
         addTaskBtn.setAttribute('id', 'addTaskBtn');
         //add event listener for btn to open modal window on click
-        addTaskBtn.addEventListener('click', addTaskModelOpen)
+        addTaskBtn.addEventListener('click', addTaskModalOpen);
 
         if (document.querySelector('#addTaskBtn') != null) {
             return
@@ -292,9 +293,20 @@ const DOMController = (() => {
         }
     }
 
-    const addTaskModelOpen = () => {
+    const addTaskModalOpen = () => {
         let addTaskModal = document.getElementById('addTaskModal');
         addTaskModal.style.display = 'block';
+        //change modal window text to reflect add task mode
+        let addTaskTitle = document.getElementById('add-task-title');
+        addTaskTitle.textContent = 'Title of New Task';
+        let addTaskNotes = document.getElementById('add-task-notes');
+        addTaskNotes.textContent = 'Notes';
+        let addTaskModalBtn = document.getElementById('addTaskModalBtn');
+        addTaskModalBtn.textContent = "Add Task";
+
+        addTaskModalBtn.removeEventListener('click', editTask);
+        addTaskModalBtn.addEventListener('click', addTask);
+
         addTaskModalClose();
     }
 
@@ -324,7 +336,7 @@ const DOMController = (() => {
         }
     }
 
-    //controls adding of tasks using button in modal window
+    
     const addTaskEventListener = () => {
         let addTaskModalBtn = document.getElementById('addTaskModalBtn');
         addTaskModalBtn.addEventListener('click', addTask);
@@ -356,6 +368,8 @@ const DOMController = (() => {
     
     //change the modal window for adding tasks into one for editing tasks
     const editTaskModalOpen = () => {
+        let addTaskModal = document.getElementById('addTaskModal');
+        addTaskModal.style.display = 'block';
         //grab current indices
         let projectIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
         let taskIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentTaskIndex();
@@ -380,8 +394,6 @@ const DOMController = (() => {
     
 
     const toggleTaskComplete = (e) => {
-        let test = e.target;
-        let test2 = e.currentTarget;
         let projectIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
         let taskIndex = e.target.getAttribute('data-taskNum');
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.toggleComplete(projectIndex, taskIndex);
@@ -393,12 +405,18 @@ const DOMController = (() => {
             parent.removeChild(parent.firstChild)
         }
     }
+
+    const setTutorialProject = () => {
+        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addProject('Example Project');
+        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.setCurrentProject(0);
+        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(0, 'Example Task: Click me!', 'Use the edit and delete buttons to update your tasks');
+    }
     
     const renderDOM = () => {
+        setTutorialProject();
         renderProjectArea();
         addProjectDropDownEventListener();
         addNewProjectEventListener();
-        addTaskEventListener();
     }
 
     return {
@@ -426,14 +444,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-//logicController.addProject('click below to add project');
-_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addProject('test');
-_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addTask(0, 'take a dump', 'I have to do this', true);
-//logicController.addTask(0, 'get out of bed', 'No choice', false);
-_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addProject('life goals');
-_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addTask(1, 'party a lot', 'drinking is good', true);
-//logicController.addProject('obligations');
-//logicController.addTask(2, 'go to school', 'learning is good', false);
+
 
 _DOMcontroller__WEBPACK_IMPORTED_MODULE_0__.default.renderDOM();
 
