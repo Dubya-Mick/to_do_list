@@ -59,14 +59,14 @@ const logicController = (() => {
 
 
     const editTaskNotes = (projectIndex, taskIndex, notes) => {
-        project[projectIndex].tasks[taskIndex].notes = notes;
+        projects[projectIndex].tasks[taskIndex].notes = notes;
     }
 
     const toggleComplete = (projectIndex, taskIndex) => {
-        if (project[projectIndex].tasks[taskIndex].isComplete) {
-            project[projectIndex].tasks[taskIndex].isComplete = false;
+        if (projects[projectIndex].tasks[taskIndex].isComplete == false) {
+            projects[projectIndex].tasks[taskIndex].isComplete = true;
         } else {
-            project[projectIndex].tasks[taskIndex].isComplete = true;
+            projects[projectIndex].tasks[taskIndex].isComplete = false;
         }
     }
 
