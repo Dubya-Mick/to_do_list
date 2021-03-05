@@ -102,15 +102,36 @@ const DOMController = (() => {
             let notes = document.createElement('div');
             notes.textContent = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[i].notes;
 
-            //create div task completion y/n
-            let isComplete = document.createElement('div');
-            isComplete.textContent = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[i].isComplete;
-            isComplete.setAttribute('data-taskNum', `${i}`);
+            //task completion slider
+            //add event listener to the nested checkbox to avoid multiple firings due to bubbling
+            let toggle = document.querySelector('.complete-switch');
+            let completionSlider = toggle.cloneNode(true);
+            let completionSliderCheckBox = completionSlider.firstElementChild;
+            completionSliderCheckBox.setAttribute('data-taskNum', `${i}`);
+            completionSlider.style.display = 'inline-block';
+            
+            //check if the task is complete and display the slide accordingly
+            if (_logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[i].isComplete == true) {
+                completionSliderCheckBox.checked = true;
+            } else {
+                completionSliderCheckBox.checked = false;
+            }
+
+            completionSliderCheckBox.addEventListener('click', (e) => {
+                toggleTaskComplete(e);
+            });
+
+
 
             //create div for edit button
             let editTaskButton = document.createElement('i');
             editTaskButton.setAttribute('class', 'far fa-edit');
             editTaskButton.setAttribute('data-taskNum', `${i}`);
+            editTaskButton.addEventListener('click', (e) => {
+                setCurrentTaskOnClick(e);
+                editTaskModalOpen();
+                addTaskModelOpen();
+            })
 
             //create div for delete button
             let deleteTaskButton = document.createElement('i');
@@ -127,7 +148,7 @@ const DOMController = (() => {
 
             //add task title and info to DOM
             taskTitle.appendChild(taskDetails);
-            tasksAndDeets.appendChild(isComplete);
+            tasksAndDeets.appendChild(completionSlider);
             tasksAndDeets.appendChild(taskTitle);
             tasksAndDeets.appendChild(editTaskButton);
             tasksAndDeets.appendChild(deleteTaskButton);
@@ -140,7 +161,6 @@ const DOMController = (() => {
 
     //display title of project above task list
     const displayCurrentProjectTitle = () => {
-         
          let projTitleDisplay = document.querySelector('#projTitle');
          let currentProjIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
          projTitleDisplay.textContent = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[currentProjIndex].title;
@@ -177,14 +197,13 @@ const DOMController = (() => {
             return
         } else {
             taskArea.appendChild(addTaskBtn);
-            addTaskModalClose();
         }
 
         
     }
 
     //unhides the dropdown for adding projects
-    const addProjectDropDown = () => {
+    const addProjectDropDownEventListener = () => {
         let projDropDown = document.querySelector('.addProjMenu');
         let addProjBtn = document.querySelector('.addProjBtn');
         addProjBtn.addEventListener('click', () => {
@@ -194,7 +213,7 @@ const DOMController = (() => {
     }
 
     //adds new project
-    const addNewProject = () => {
+    const addNewProjectEventListener = () => {
         let addProjDropBtn = document.querySelector('#addProjDropDownBtn');
         addProjDropBtn.addEventListener('click', () => {
             let newProjTitle = document.querySelector("#proj-title-input").value;
@@ -276,6 +295,7 @@ const DOMController = (() => {
     const addTaskModelOpen = () => {
         let addTaskModal = document.getElementById('addTaskModal');
         addTaskModal.style.display = 'block';
+        addTaskModalClose();
     }
 
 
@@ -289,40 +309,82 @@ const DOMController = (() => {
         }
     }
 
-    //controls adding of tasks using button in modal window
     const addTask = () => {
         let addTaskModal = document.getElementById('addTaskModal');
+        let taskTitleInput = document.getElementById('task-title-input').value;
+        let taskNotesInput = document.getElementById('task-notes-input').value;
+        if (taskTitleInput.length < 1) {
+            alert('Sure about that title?')
+        } else if (taskNotesInput < 1) {
+            alert('Sure about those notes?');
+        } else {
+            addTaskModal.style.display = 'none';
+            _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(_logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex(), taskTitleInput, taskNotesInput, false);
+            renderTasks();
+        }
+    }
+
+    //controls adding of tasks using button in modal window
+    const addTaskEventListener = () => {
         let addTaskModalBtn = document.getElementById('addTaskModalBtn');
-        addTaskModalBtn.addEventListener('click', () => {
-            let taskTitleInput = document.getElementById('task-title-input').value;
-            let taskNotesInput = document.getElementById('task-notes-input').value;
-            if (taskTitleInput.length < 1) {
-                alert('Sure about that title?')
-            } else if (taskNotesInput < 1) {
-                alert('Sure about those notes?');
-            } else {
-                addTaskModal.style.display = 'none';
-                _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(_logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex(), taskTitleInput, taskNotesInput, false);
-                renderTasks();
-            }
-            
-        })
+        addTaskModalBtn.addEventListener('click', addTask);
     }
 
     const deleteTask = (e) => {
         let projectIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
-        let taskIndex = e.target.getAttribute('dataTask-num');
+        let taskIndex = e.target.getAttribute('data-taskNum');
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.deleteTask(projectIndex, taskIndex);
         renderTasks();
     }
-    
 
-    const editTask = (e) => {
+    const editTask = () => {
         let projectIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
         let taskIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentTaskIndex();
-        let editTaskBtn = e.target;
-        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.editTaskTitle(projectIndex, taskIndex, )
+        let editedTitle = document.getElementById('task-title-input').value;
+        let editedNotes = document.getElementById('task-notes-input').value;
+        if (editedTitle.length < 1) {
+            alert('Sure about your new title?');
+        } else if (editedNotes.length < 1) {
+            alert('Sure about your new notes?');
+        } else {
+            _logicController__WEBPACK_IMPORTED_MODULE_0__.default.editTaskTitle(projectIndex, taskIndex, editedTitle);
+            _logicController__WEBPACK_IMPORTED_MODULE_0__.default.editTaskNotes(projectIndex, taskIndex, editedNotes);
+            addTaskModal.style.display = 'none';
+            renderTasks();
+        }
+    }
+    
+    //change the modal window for adding tasks into one for editing tasks
+    const editTaskModalOpen = () => {
+        //grab current indices
+        let projectIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
+        let taskIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentTaskIndex();
+        //change text of modal window to reflect editing mode
+        let editTaskTitle = document.getElementById('add-task-title');
+        editTaskTitle.textContent = 'Edit Title';
+        let editTaskNotes = document.getElementById('add-task-notes');
+        editTaskNotes.textContent = 'Edit Notes';
+        let editTaskModalBtn = document.getElementById('addTaskModalBtn');
+        editTaskModalBtn.textContent = "Edit Task";
+        //display current title for editing
+        let editTitleInput = document.getElementById('task-title-input');
+        editTitleInput.value = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[taskIndex].title;
+        //display current notes for editing
+        let editNotesInput = document.getElementById('task-notes-input');
+        editNotesInput.value = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[taskIndex].notes;
+        //remove add task event listener and replace with edit task event listener
+        editTaskModalBtn.removeEventListener('click', addTask);
+        editTaskModalBtn.addEventListener('click', editTask);
+    }
 
+    
+
+    const toggleTaskComplete = (e) => {
+        let test = e.target;
+        let test2 = e.currentTarget;
+        let projectIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
+        let taskIndex = e.target.getAttribute('data-taskNum');
+        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.toggleComplete(projectIndex, taskIndex);
     }
 
 
@@ -334,9 +396,9 @@ const DOMController = (() => {
     
     const renderDOM = () => {
         renderProjectArea();
-        addProjectDropDown();
-        addNewProject();
-        addTask();
+        addProjectDropDownEventListener();
+        addNewProjectEventListener();
+        addTaskEventListener();
     }
 
     return {
@@ -364,13 +426,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addProject('daily living');
-_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addTask(0, 'take a dump', 'I have to do this', false);
-_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addTask(0, 'get out of bed', 'No choice', false);
+//logicController.addProject('click below to add project');
+_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addProject('test');
+_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addTask(0, 'take a dump', 'I have to do this', true);
+//logicController.addTask(0, 'get out of bed', 'No choice', false);
 _logicController__WEBPACK_IMPORTED_MODULE_1__.default.addProject('life goals');
-_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addTask(1, 'party a lot', 'drinking is good', false);
-_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addProject('obligations');
-_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addTask(2, 'go to school', 'learning is good', false);
+_logicController__WEBPACK_IMPORTED_MODULE_1__.default.addTask(1, 'party a lot', 'drinking is good', true);
+//logicController.addProject('obligations');
+//logicController.addTask(2, 'go to school', 'learning is good', false);
 
 _DOMcontroller__WEBPACK_IMPORTED_MODULE_0__.default.renderDOM();
 
@@ -451,14 +514,14 @@ const logicController = (() => {
 
 
     const editTaskNotes = (projectIndex, taskIndex, notes) => {
-        project[projectIndex].tasks[taskIndex].notes = notes;
+        projects[projectIndex].tasks[taskIndex].notes = notes;
     }
 
     const toggleComplete = (projectIndex, taskIndex) => {
-        if (project[projectIndex].tasks[taskIndex].isComplete) {
-            project[projectIndex].tasks[taskIndex].isComplete = false;
+        if (projects[projectIndex].tasks[taskIndex].isComplete == false) {
+            projects[projectIndex].tasks[taskIndex].isComplete = true;
         } else {
-            project[projectIndex].tasks[taskIndex].isComplete = true;
+            projects[projectIndex].tasks[taskIndex].isComplete = false;
         }
     }
 
