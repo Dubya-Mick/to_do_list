@@ -196,14 +196,17 @@ const DOMController = (() => {
 
     //adds new project
     const addNewProjectEventListener = () => {
+        let projDropDown = document.querySelector('.addProjMenu');
         let addProjDropBtn = document.querySelector('#addProjDropDownBtn');
         addProjDropBtn.addEventListener('click', () => {
             let newProjTitle = document.querySelector("#proj-title-input").value;
             if(newProjTitle.length > 30) {
                 return
             } else {
-                logicController.addProject(newProjTitle);
-                renderProjectArea();
+                projDropDown.classList.toggle('show'); //hide dropdow
+                logicController.addProject(newProjTitle); //add project
+                renderProjectArea(); 
+                document.querySelector("#proj-title-input").value = ''; //empty text input
             }
         })
     }
@@ -214,7 +217,7 @@ const DOMController = (() => {
     const editProjectTitle = (e) => {
         let projectIndex = e.target.getAttribute('data-ProjNum');
         let editBtn = e.target;
-        let projectTitleToEdit = e.target.previousSibling;
+        let projectTitleToEdit = e.target.previousSibling; //grab the project title
 
         //check if other projects are currently editable and disable editing if so
         let projectEditBtns = [...document.querySelectorAll('.projectEditButton')];
@@ -314,6 +317,8 @@ const DOMController = (() => {
             addTaskModal.style.display = 'none';
             logicController.addTask(logicController.getCurrentProjectIndex(), taskTitleInput, taskNotesInput, false);
             renderTasks();
+            document.getElementById('task-title-input').value = '';
+            document.getElementById('task-notes-input').value = '';
         }
     }
 
