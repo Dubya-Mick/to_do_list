@@ -44,25 +44,33 @@ const DOMController = (() => {
                 renderAddTaskBtn();
             });
 
+
             //create edit button
-            let editButton = document.createElement('i');
-            editButton.setAttribute('class', 'far fa-edit');
-            editButton.classList.add('projectEditButton');
+            let editButton = document.createElement('a');
+            editButton.classList.add('waves-effect', 'waves-light', 'btn', 'projectEditButton');
+            editButton.textContent = "Edit";
             editButton.addEventListener('click', (e) => {
                 editProjectTitle(e);
-            })
+            });
 
             //create delete button
-            let deleteButton = document.createElement('i');
-            deleteButton.setAttribute('class', 'fas fa-trash-alt');
+            let deleteButton = document.createElement('a');
+            deleteButton.classList.add('waves-effect', 'waves-light', 'btn');
             deleteButton.addEventListener('click', (e) => {
                 deleteProject(e);
             })
+
+            //create delete icon
+            let deleteIcon = document.createElement('i');
+            deleteIcon.classList.add('material-icons')
+            deleteIcon.textContent = 'delete';
+            deleteButton.appendChild(deleteIcon);
 
             //add data-attributes so items can be tracked
             projectTitle.setAttribute('data-projNum', `${i}`);
             editButton.setAttribute('data-projNum', `${i}`);
             deleteButton.setAttribute('data-projNum', `${i}`);
+            deleteIcon.setAttribute('data-projNum', `${i}`);
 
             //append items to the document frag before appending to DOM
             allProjectTitles.appendChild(projectTitle);
@@ -108,11 +116,13 @@ const DOMController = (() => {
             let completionSlider = toggle.cloneNode(true);
             let completionSliderCheckBox = completionSlider.firstElementChild;
             completionSliderCheckBox.setAttribute('data-taskNum', `${i}`);
-            completionSlider.style.display = 'inline-block';
+            completionSlider.style.display = 'block';
+            
             
             //check if the task is complete and display the slide accordingly
             if (_logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[i].isComplete == true) {
                 completionSliderCheckBox.checked = true;
+                
             } else {
                 completionSliderCheckBox.checked = false;
             }
@@ -241,17 +251,15 @@ const DOMController = (() => {
         //check if other projects are currently editable and disable editing if so
         let projectEditBtns = [...document.querySelectorAll('.projectEditButton')];
         for (let i = 0; i < projectEditBtns.length; i++) {
-            if(projectEditBtns[i].classList.contains('fa-check-square') && projectEditBtns[i] != editBtn) {
-                projectEditBtns[i].classList.remove('fa-check-square');
-                projectEditBtns[i].classList.add('fa-edit');
+            if(projectEditBtns[i].textContent =  true && projectEditBtns[i] != editBtn) {
+                projectEditBtns[i].textContent = 'edit';
                 projectEditBtns[i].previousSibling.style.backgroundColor = 'white';
                 projectEditBtns[i].previousSibling.contentEditable = 'false';
             }
         }
         //if project is currently editable, clicking the checkmark updates the title
         if (projectTitleToEdit.contentEditable == 'true') {
-            editBtn.classList.remove('fa-check-square');
-            editBtn.classList.add('fa-edit');
+            editBtn.textContent = 'edit';
             projectTitleToEdit.contentEditable = 'false';
             projectTitleToEdit.style.backgroundColor = 'white';
             _logicController__WEBPACK_IMPORTED_MODULE_0__.default.editProject(projectIndex, projectTitleToEdit.textContent);
@@ -259,8 +267,9 @@ const DOMController = (() => {
             displayCurrentProjectTitle();
         //otherwise --> make the title editable
         } else {
-            editBtn.classList.remove('fa-edit');
-            editBtn.classList.add('fa-check-square');
+            editBtn.textContent = 'done';
+            //editBtn.classList.remove('fa-edit');
+            //editBtn.classList.add('fa-check-square');
             projectTitleToEdit.contentEditable = 'true';
             projectTitleToEdit.style.backgroundColor = '#87ceff';
         }
@@ -310,18 +319,18 @@ const DOMController = (() => {
         addTaskModalBtn.removeEventListener('click', editTask);
         addTaskModalBtn.addEventListener('click', addTask);
 
-        addTaskModalClose();
+        
     }
 
 
-    //closes the task addition window if you click outside it
-    const addTaskModalClose = () => {
-        window.onclick = (e) => {
-            let addTaskModal = document.getElementById('addTaskModal');
+    const addTaskModalCloseEventListener = () => {
+        let addTaskModal = document.getElementById('addTaskModal');
+        addTaskModal.addEventListener('click', (e) => {
             if (e.target == addTaskModal) {
-                addTaskModal.style.display = 'none';
+                addTaskModal.style.display ='none';
             }
-        }
+        })
+        
     }
 
     const addTask = () => {
@@ -341,11 +350,7 @@ const DOMController = (() => {
         }
     }
 
-    
-    const addTaskEventListener = () => {
-        let addTaskModalBtn = document.getElementById('addTaskModalBtn');
-        addTaskModalBtn.addEventListener('click', addTask);
-    }
+
 
     const deleteTask = (e) => {
         let projectIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
@@ -414,7 +419,7 @@ const DOMController = (() => {
     const setTutorialProject = () => {
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addProject('Example Project');
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.setCurrentProject(0);
-        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(0, 'Example Task: Click me!', 'Use the edit and delete buttons to update your tasks');
+        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(0, 'Example Task: Click me!', 'Use the edit and delete buttons to update your tasks', false);
     }
     
     const renderDOM = () => {
@@ -422,6 +427,7 @@ const DOMController = (() => {
         renderProjectArea();
         addProjectDropDownEventListener();
         addNewProjectEventListener();
+        addTaskModalCloseEventListener();        
     }
 
     return {
