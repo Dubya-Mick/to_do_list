@@ -1,4 +1,6 @@
 import logicController from './logicController';
+import Collapsible from 'materialize-css';
+
 
 const DOMController = (() => {
 
@@ -71,94 +73,94 @@ const DOMController = (() => {
         clearDisplay(taskList);
         
         //render current task titles (shown) and task details (hidden)
-        let tasksAndDeets = document.createDocumentFragment();
+        let allTasks = document.createDocumentFragment();
         for(let i = 0; i < logicController.projects[projectIndex].tasks.length; i++) {
-            //title of tasks
-            let taskTitle = document.createElement('div');
-            taskTitle.textContent = logicController.projects[projectIndex].tasks[i].title;
-            taskTitle.setAttribute('data-taskNum', `${i}`);
-            taskTitle.classList.add('task');
-            taskTitle.addEventListener('click', (e) => {
-                //prevent children from inheriting the onclick event
-                if (e.currentTarget !== e.target) {
-                    return;
-                }
-                setCurrentTaskOnClick(e);
-                renderTaskDetails(e);
-            });
-
-            //create div for task notes
-            let notes = document.createElement('div');
-            notes.textContent = logicController.projects[projectIndex].tasks[i].notes;
-
-            //task completion slider
-            //add event listener to the nested checkbox to avoid multiple firings due to bubbling
-            let toggle = document.querySelector('.complete-switch');
-            let completionSlider = toggle.cloneNode(true);
-            let completionSliderCheckBox = completionSlider.firstElementChild;
-            completionSliderCheckBox.setAttribute('data-taskNum', `${i}`);
-            completionSlider.style.display = 'block';
             
-            
-            //check if the task is complete and display the slide accordingly
+            //create collapsible components for task list
+            let taskContainer = document.createElement('li');
+            let taskHeader = document.createElement('div');
+            let taskBody = document.createElement('div');
+            let taskText = document.createElement('span');
+            let edtBtn = document.createElement('a');
+            let dltBtn = document.createElement('a');
+            let edtIcon = document.createElement('i');
+            let dltIcon = document.createElement('i');
+
+            //create completion checkbox
+            let checkBoxWrapper = document.createElement('label');
+            let checkBox = document.createElement('input');
+            checkBox.type = 'checkbox';
+            let checkBoxText = document.createElement('span');
+            checkBoxText.textContent = 'Complete?';
+            checkBoxWrapper.appendChild(checkBox);
+            checkBoxWrapper.appendChild(checkBoxText);
+
+            //logic to control display of already completed tasks
             if (logicController.projects[projectIndex].tasks[i].isComplete == true) {
-                completionSliderCheckBox.checked = true;
-                
+                checkBox.checked = true;
+                checkBox.nextSibling.textContent = "Complete!"
             } else {
-                completionSliderCheckBox.checked = false;
+                checkBox.checked = false;
+                checkBox.nextSibling.textContent = "Complete?"
             }
-
-            completionSliderCheckBox.addEventListener('click', (e) => {
-                toggleTaskComplete(e);
-            });
-
-
-
-            //create div for edit button
-            let editTaskButton = document.createElement('i');
-            editTaskButton.setAttribute('class', 'far fa-edit');
-            editTaskButton.setAttribute('data-taskNum', `${i}`);
-            editTaskButton.addEventListener('click', (e) => {
-                setCurrentTaskOnClick(e);
-                editTaskModalOpen();
-            })
-
-            //create div for delete button
-            let deleteTaskButton = document.createElement('i');
-            deleteTaskButton.setAttribute('class', 'fas fa-trash-alt');
-            deleteTaskButton.setAttribute('data-taskNum', `${i}`);
-            deleteTaskButton.addEventListener('click', deleteTask);
-
-            //create wrapper for task details -
-            let taskDetails = document.createElement('div');
-            taskDetails.classList.add('taskDetails');
-            taskDetails.classList.add('hidden');
-            taskDetails.appendChild(notes);
             
+            //add classes/types to main collapsible componenents for task list
+            taskHeader.classList.add('collapsible-header');
+            taskBody.classList.add('collapsible-body');
+            edtBtn.classList.add('waves-effect', 'waves-light', 'btn');
+            dltBtn.classList.add('waves-effect', 'waves-light', 'btn');
+            edtIcon.classList.add('material-icons');
+            dltIcon.classList.add('material-icons');
+            edtIcon.textContent = 'edit';
+            dltIcon.textContent = 'delete';
 
-            //add task title and info to DOM
-            taskTitle.appendChild(taskDetails);
-            tasksAndDeets.appendChild(completionSlider);
-            tasksAndDeets.appendChild(taskTitle);
-            tasksAndDeets.appendChild(editTaskButton);
-            tasksAndDeets.appendChild(deleteTaskButton);
+            //append icons to buttons
+            edtBtn.appendChild(edtIcon);
+            dltBtn.appendChild(dltIcon);
+            
+            //add data attributes for tracing of task indices
+            taskHeader.setAttribute('data-taskNum', `${i}`);
+            checkBox.setAttribute('data-taskNum', `${i}`);
 
+            //fill textContent for task name and notes
+            taskHeader.textContent = logicController.projects[projectIndex].tasks[i].title;
+            taskText.textContent = logicController.projects[projectIndex].tasks[i].notes;
+            
+            //add event listeners to components
+            taskHeader.addEventListener('click', (e) => {
+                setCurrentTaskOnClick(e);
+            });
+            checkBox.addEventListener('click', (e) => {
+                toggleTaskComplete(e);
+                checkBoxLabelComplete(e);
+            });
+            dltBtn.addEventListener('click', deleteTask);
+            edtBtn.addEventListener('click', editTaskModalOpen);
+
+
+            //append task notes and edit/delete buttons to body of collapsible
+            taskBody.appendChild(taskText);
+            taskBody.appendChild(edtBtn);
+            taskBody.appendChild(dltBtn);
+
+            //append checkbox to task header
+            taskHeader.appendChild(checkBoxWrapper);
+
+            //append task header and body to task container
+            taskContainer.appendChild(taskHeader);
+            taskContainer.appendChild(taskBody);
+
+            allTasks.appendChild(taskContainer);
         }
-        taskList.appendChild(tasksAndDeets);
-        
 
+        taskList.appendChild(allTasks);
     }
-
+            
     //display title of project above task list
     const displayCurrentProjectTitle = () => {
          let projTitleDisplay = document.querySelector('#projTitle');
          let currentProjIndex = logicController.getCurrentProjectIndex();
          projTitleDisplay.textContent = logicController.projects[currentProjIndex].title;
-    }
-
-    const renderTaskDetails = (e) => {
-        let clickedTaskDeets = e.target.querySelector('.taskDetails');
-        clickedTaskDeets.classList.toggle('hidden');
     }
 
     //sets the current project for later retrieval of index
@@ -177,18 +179,25 @@ const DOMController = (() => {
 
     //creates the button for adding tasks
     const renderAddTaskBtn = () => {
-        let taskArea = document.querySelector('#taskArea');
-        let addTaskBtn = document.createElement('button');
-        let addTaskModal = document.getElementById('addTaskModal');
-        addTaskBtn.textContent = '+';
+        let taskWrapper = document.querySelector('.task-list-wrapper');
+        let addTaskBtn = document.createElement('a');
+        let addTaskIcon = document.createElement('i');
+
+        addTaskIcon.classList.add('material-icons', 'left');
+        addTaskIcon.textContent = 'add';
+
+        addTaskBtn.classList.add('waves-effect', 'waves-light', 'btn');
+        addTaskBtn.textContent = 'Add Task';
         addTaskBtn.setAttribute('id', 'addTaskBtn');
+
+        addTaskBtn.appendChild(addTaskIcon);
         //add event listener for btn to open modal window on click
         addTaskBtn.addEventListener('click', addTaskModalOpen);
 
         if (document.querySelector('#addTaskBtn') != null) {
             return
         } else {
-            taskArea.appendChild(addTaskBtn);
+            taskWrapper.appendChild(addTaskBtn);
         }
 
         
@@ -333,9 +342,9 @@ const DOMController = (() => {
 
 
 
-    const deleteTask = (e) => {
+    const deleteTask = () => {
         let projectIndex = logicController.getCurrentProjectIndex();
-        let taskIndex = e.target.getAttribute('data-taskNum');
+        let taskIndex = logicController.getCurrentTaskIndex();
         logicController.deleteTask(projectIndex, taskIndex);
         renderTasks();
     }
@@ -390,6 +399,19 @@ const DOMController = (() => {
         logicController.toggleComplete(projectIndex, taskIndex);
     }
 
+    const checkBoxLabelComplete = (e) => {
+        let projectIndex = logicController.getCurrentProjectIndex();
+        let taskIndex = e.target.getAttribute('data-taskNum');
+        let checkBoxLabel = e.target.nextSibling;
+        if (logicController.projects[projectIndex].tasks[taskIndex].isComplete == true) {
+            checkBoxLabel.textContent = 'Complete!';
+        } else {
+            checkBoxLabel.textContent = "Complete?";
+        }
+    }
+
+
+
 
     const clearDisplay = (parent) => {
         while (parent.firstChild) {
@@ -401,6 +423,14 @@ const DOMController = (() => {
         logicController.addProject('Example Project');
         logicController.setCurrentProject(0);
         logicController.addTask(0, 'Example Task: Click me!', 'Use the edit and delete buttons to update your tasks', false);
+
+    }
+
+    const collapsibleTest = () => {
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.collapsible');
+            var instances = M.Collapsible.init(elems, true);
+          });
     }
     
     const renderDOM = () => {
@@ -408,8 +438,12 @@ const DOMController = (() => {
         renderProjectArea();
         addProjectDropDownEventListener();
         addNewProjectEventListener();
-        addTaskModalCloseEventListener();        
+        addTaskModalCloseEventListener();    
+        collapsibleTest();    
     }
+
+
+    
 
     return {
         renderDOM
