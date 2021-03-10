@@ -2,16 +2,7 @@ body {
     font-family: 'Raleway', sans-serif;
 }
 
-button {
-    display: block;
-    border: 1px solid black;
-    background-color: white;
-    font-size: 1.5rem;
-    width: 2rem;
-    height: 2rem;
-    margin-top: 0.5rem;
-    outline: none;
-}
+
 
 
 
@@ -68,9 +59,9 @@ button {
 
 #projectArea {
     
-    margin: 0 0 0;
-    border: 1px solid black;
-    height: 96vh;
+    margin: 1vh 0 0;
+    border-right: 1px solid black;
+    height: 100vh;
     width: 35vw;
 }
 
@@ -94,15 +85,6 @@ button {
 }
 
 
-
-.addProjBtn {
-    cursor: pointer;
-}
-
-.addProjBtn:hover {
-    background-color: black;
-    color: white;
-}
 
 .addProjMenu {
     display: none;
@@ -135,17 +117,18 @@ button {
 }
 
 #taskArea {
-    width: 65vw;
     margin: 1vh auto;
 }
 
+#task-list-wrapper {
+    width: 55vw;
+    display: block;
+}
+
+#addTask
+
 #taskList {
-    display: grid;
-    grid-template-columns: 0.2fr 0.8fr 0.2fr 0.2fr;
-    align-items: center;
-    justify-items: center;
-    gap: 3px;
-    border: 1px solid black;
+    margin: 0 auto;
 }
 
 #projTitle {
@@ -153,22 +136,12 @@ button {
     font-size: 2rem;
 }
 
-.task {
-    cursor: pointer;
-    font-size: 1.5rem;
-}
-
-.taskDetails {
-    font-size: 1rem;
-    margin-left: 1rem;
-    cursor: auto;
-}
 
 
-.complete-switch {
-    margin-left: 0.5rem;
-    display: none;
-}
+
+
+
+
 
 
 .hidden {
@@ -179,11 +152,7 @@ button {
     display: block;
 }
 
-#addTaskBtn {
-    float: left;
-    cursor: pointer;
-    margin-top: 1rem;
-}
+
 
 
 #addTaskModal {
@@ -196,4 +165,12 @@ button {
 
 .fas {
     cursor: pointer;
+}
+
+.collapsible-header {
+    justify-content: space-between;
+}
+
+.collapsible-body {
+    justify-content: space-between;
 }
