@@ -1,5 +1,7 @@
 import logicController from './logicController';
 import Collapsible from 'materialize-css';
+import Modal from 'materialize-css';
+import Toasts from 'materialize-css';
 
 
 const DOMController = (() => {
@@ -215,16 +217,16 @@ const DOMController = (() => {
 
     //adds new project
     const addNewProjectEventListener = () => {
-        let projDropDown = document.querySelector('.addProjMenu');
-        let addProjDropBtn = document.querySelector('#addProjDropDownBtn');
-        addProjDropBtn.addEventListener('click', () => {
+        let addProjBtn = document.querySelector('#add-new-proj-btn');
+        addProjBtn.addEventListener('click', () => {
             let newProjTitle = document.querySelector("#proj-title-input").value;
-            if(newProjTitle.length > 30) {
-                return
+            if(newProjTitle.length == 0) {
+                M.toast({html: 'Give us a project title!'})
             } else {
-                projDropDown.classList.toggle('show'); //hide dropdow
+                var modalInstance = M.Modal.getInstance(document.getElementById('add-proj-modal'));
                 logicController.addProject(newProjTitle); //add project
                 renderProjectArea(); 
+                modalInstance.close();
                 document.querySelector("#proj-title-input").value = ''; //empty text input
             }
         })
@@ -258,8 +260,6 @@ const DOMController = (() => {
         //otherwise --> make the title editable
         } else {
             editBtn.textContent = 'done';
-            //editBtn.classList.remove('fa-edit');
-            //editBtn.classList.add('fa-check-square');
             projectTitleToEdit.contentEditable = 'true';
             projectTitleToEdit.style.backgroundColor = '#87ceff';
         }
@@ -426,20 +426,28 @@ const DOMController = (() => {
 
     }
 
-    const collapsibleTest = () => {
+    const materializeCollapsible = () => {
         document.addEventListener('DOMContentLoaded', function() {
             var elems = document.querySelectorAll('.collapsible');
             var instances = M.Collapsible.init(elems, true);
+          });
+    }
+
+    const materializeModal = () => {
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.modal');
+            var instances = M.Modal.init(elems, true);
           });
     }
     
     const renderDOM = () => {
         setTutorialProject();
         renderProjectArea();
-        addProjectDropDownEventListener();
+        //addProjectDropDownEventListener();
         addNewProjectEventListener();
         addTaskModalCloseEventListener();    
-        collapsibleTest();    
+        materializeCollapsible(); 
+        materializeModal();   
     }
 
 
