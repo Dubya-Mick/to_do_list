@@ -174,3 +174,18 @@ body {
 .collapsible-body {
     justify-content: space-between;
 }
+
+.project-title-input {
+    display: block;
+    width: 30vw;
+    margin: 5vh auto;
+}
+
+#modal1 {
+    width: 40vw;
+}
+
+#proj-title-input {
+    width: 100%
+}
+
