@@ -65,7 +65,6 @@ const DOMController = (() => {
         projList.appendChild(allProjectTitles);
     }
 
-
     const renderTasks = () => {
         //grab tasklist div
         let taskList = document.querySelector('#taskList');
@@ -106,10 +105,11 @@ const DOMController = (() => {
                 checkBox.nextSibling.textContent = "Complete?"
             }
             
-            //add classes/types to main collapsible componenents for task list
+            //add classes/types to main collapsible components for task list
             taskHeader.classList.add('collapsible-header');
             taskBody.classList.add('collapsible-body');
-            edtBtn.classList.add('waves-effect', 'waves-light', 'btn');
+            edtBtn.classList.add('waves-effect', 'waves-light', 'btn', 'modal-trigger');
+            edtBtn.href = '#add-task-modal'; //link edit button to update task modal
             dltBtn.classList.add('waves-effect', 'waves-light', 'btn');
             edtIcon.classList.add('material-icons');
             dltIcon.classList.add('material-icons');
@@ -133,8 +133,8 @@ const DOMController = (() => {
                 setCurrentTaskOnClick(e);
             });
             checkBox.addEventListener('click', (e) => {
-                toggleTaskComplete(e);
-                checkBoxLabelComplete(e);
+                    toggleTaskComplete(e);
+                    checkBoxLabelComplete(e);
             });
             dltBtn.addEventListener('click', deleteTask);
             edtBtn.addEventListener('click', editTaskModalOpen);
@@ -171,8 +171,6 @@ const DOMController = (() => {
         logicController.setCurrentProject(projectIndex);
     }
 
-
-
     //sets the current task for later retrieval of index
     const setCurrentTaskOnClick = (e) => {
         let taskIndex = e.target.getAttribute('data-taskNum');
@@ -188,12 +186,12 @@ const DOMController = (() => {
         addTaskIcon.classList.add('material-icons', 'left');
         addTaskIcon.textContent = 'add';
 
-        addTaskBtn.classList.add('waves-effect', 'waves-light', 'btn');
+        addTaskBtn.classList.add('waves-effect', 'waves-light', 'btn', 'modal-trigger');
         addTaskBtn.textContent = 'Add Task';
         addTaskBtn.setAttribute('id', 'addTaskBtn');
 
         addTaskBtn.appendChild(addTaskIcon);
-        //add event listener for btn to open modal window on click
+        addTaskBtn.href = '#add-task-modal';
         addTaskBtn.addEventListener('click', addTaskModalOpen);
 
         if (document.querySelector('#addTaskBtn') != null) {
@@ -205,21 +203,8 @@ const DOMController = (() => {
         
     }
 
-    //unhides the dropdown for adding projects
-    const addProjectDropDownEventListener = () => {
-        let projDropDown = document.querySelector('.addProjMenu');
-        let addProjBtn = document.querySelector('.addProjBtn');
-        addProjBtn.addEventListener('click', () => {
-            projDropDown.classList.toggle('show');
-        })
-        
-    }
-
-    //adds new project
-    const addNewProjectEventListener = () => {
-        let addProjBtn = document.querySelector('#add-new-proj-btn');
-        addProjBtn.addEventListener('click', () => {
-            let newProjTitle = document.querySelector("#proj-title-input").value;
+    const addNewProject = () => {
+        let newProjTitle = document.querySelector("#proj-title-input").value;
             if(newProjTitle.length == 0) {
                 M.toast({html: 'Give us a project title!'})
             } else {
@@ -229,7 +214,11 @@ const DOMController = (() => {
                 modalInstance.close();
                 document.querySelector("#proj-title-input").value = ''; //empty text input
             }
-        })
+    }
+
+    const addNewProjectEventListener = () => {
+        let addProjBtn = document.querySelector('#add-new-proj-btn');
+        addProjBtn.addEventListener('click', addNewProject);
     }
 
     //controls editing of new project title
@@ -265,8 +254,6 @@ const DOMController = (() => {
         }
     }
 
-    
-
     const deleteProject = (e) => {
         //grab corresponding index of proj from data-attribute of trash button
         //grab div for proper removal of DOM elements as projects are deleted
@@ -296,51 +283,44 @@ const DOMController = (() => {
     }
 
     const addTaskModalOpen = () => {
-        let addTaskModal = document.getElementById('addTaskModal');
-        addTaskModal.style.display = 'block';
-        //change modal window text to reflect add task mode
-        let addTaskTitle = document.getElementById('add-task-title');
-        addTaskTitle.textContent = 'Title of New Task';
-        let addTaskNotes = document.getElementById('add-task-notes');
+        //change new task modal window text to reflect add task mode
+        let taskModalHeader = document.getElementById('task-modal-header');
+        taskModalHeader.textContent = 'Add New Task'
+        let addTaskTitle = document.getElementById('task-input-label');
+        addTaskTitle.textContent = 'Task Title';
+        let addTaskNotes = document.getElementById('task-notes-label');
         addTaskNotes.textContent = 'Notes';
-        let addTaskModalBtn = document.getElementById('addTaskModalBtn');
+        let addTaskModalBtn = document.getElementById('add-new-task-btn');
         addTaskModalBtn.textContent = "Add Task";
+        let taskTitleInput = document.getElementById('task-title-input');
+        taskTitleInput.value = '';
+        let taskNotesInput = document.getElementById('task-notes-input');
+        taskNotesInput.value  = '';
+
 
         addTaskModalBtn.removeEventListener('click', editTask);
         addTaskModalBtn.addEventListener('click', addTask);
-
-        
-    }
-
-
-    const addTaskModalCloseEventListener = () => {
-        let addTaskModal = document.getElementById('addTaskModal');
-        addTaskModal.addEventListener('click', (e) => {
-            if (e.target == addTaskModal) {
-                addTaskModal.style.display ='none';
-            }
-        })
-        
     }
 
     const addTask = () => {
-        let addTaskModal = document.getElementById('addTaskModal');
         let taskTitleInput = document.getElementById('task-title-input').value;
         let taskNotesInput = document.getElementById('task-notes-input').value;
         if (taskTitleInput.length < 1) {
-            alert('Sure about that title?')
+            M.toast({html: 'The title of this task seems a little short!'});
         } else if (taskNotesInput < 1) {
-            alert('Sure about those notes?');
+            M.toast({html: 'Give us some more detail in the notes!'});
         } else {
-            addTaskModal.style.display = 'none';
             logicController.addTask(logicController.getCurrentProjectIndex(), taskTitleInput, taskNotesInput, false);
+            var modalInstance = M.Modal.getInstance(document.getElementById('add-task-modal'));
+            modalInstance.close();
             renderTasks();
-            document.getElementById('task-title-input').value = '';
-            document.getElementById('task-notes-input').value = '';
         }
     }
 
-
+    const addNewTaskEventListener = () => {
+        let addTaskModalBtn = document.getElementById('add-new-task-btn');
+        addTaskModalBtn.addEventListener('click', addTask);
+    }
 
     const deleteTask = () => {
         let projectIndex = logicController.getCurrentProjectIndex();
@@ -355,43 +335,47 @@ const DOMController = (() => {
         let editedTitle = document.getElementById('task-title-input').value;
         let editedNotes = document.getElementById('task-notes-input').value;
         if (editedTitle.length < 1) {
-            alert('Sure about your new title?');
+            M.toast({html: 'The title of this task seems a little short!'});
         } else if (editedNotes.length < 1) {
-            alert('Sure about your new notes?');
+            M.toast({html: 'Give us some more detail in the notes!'});
         } else {
             logicController.editTaskTitle(projectIndex, taskIndex, editedTitle);
             logicController.editTaskNotes(projectIndex, taskIndex, editedNotes);
-            addTaskModal.style.display = 'none';
+            var modalInstance = M.Modal.getInstance(document.getElementById('add-task-modal'));
+            modalInstance.close();
             renderTasks();
         }
     }
     
     //change the modal window for adding tasks into one for editing tasks
     const editTaskModalOpen = () => {
-        let addTaskModal = document.getElementById('addTaskModal');
-        addTaskModal.style.display = 'block';
+        
         //grab current indices
         let projectIndex = logicController.getCurrentProjectIndex();
         let taskIndex = logicController.getCurrentTaskIndex();
         //change text of modal window to reflect editing mode
-        let editTaskTitle = document.getElementById('add-task-title');
+        let taskModalHeader = document.getElementById('task-modal-header');
+        taskModalHeader.textContent = 'Edit Task';
+        let editTaskTitle = document.getElementById('task-input-label');
+        editTaskTitle.classList.add('active');
         editTaskTitle.textContent = 'Edit Title';
-        let editTaskNotes = document.getElementById('add-task-notes');
+        let editTaskNotes = document.getElementById('task-notes-label');
+        editTaskNotes.classList.add('active');
         editTaskNotes.textContent = 'Edit Notes';
-        let editTaskModalBtn = document.getElementById('addTaskModalBtn');
+        let editTaskModalBtn = document.getElementById('add-new-task-btn');
         editTaskModalBtn.textContent = "Edit Task";
         //display current title for editing
         let editTitleInput = document.getElementById('task-title-input');
+        
         editTitleInput.value = logicController.projects[projectIndex].tasks[taskIndex].title;
         //display current notes for editing
         let editNotesInput = document.getElementById('task-notes-input');
+        
         editNotesInput.value = logicController.projects[projectIndex].tasks[taskIndex].notes;
         //remove add task event listener and replace with edit task event listener
         editTaskModalBtn.removeEventListener('click', addTask);
         editTaskModalBtn.addEventListener('click', editTask);
     }
-
-    
 
     const toggleTaskComplete = (e) => {
         let projectIndex = logicController.getCurrentProjectIndex();
@@ -409,9 +393,6 @@ const DOMController = (() => {
             checkBoxLabel.textContent = "Complete?";
         }
     }
-
-
-
 
     const clearDisplay = (parent) => {
         while (parent.firstChild) {
@@ -443,9 +424,8 @@ const DOMController = (() => {
     const renderDOM = () => {
         setTutorialProject();
         renderProjectArea();
-        //addProjectDropDownEventListener();
         addNewProjectEventListener();
-        addTaskModalCloseEventListener();    
+        addNewTaskEventListener();
         materializeCollapsible(); 
         materializeModal();   
     }
