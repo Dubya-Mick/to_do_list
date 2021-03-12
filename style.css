@@ -34,19 +34,9 @@ body {
     padding-top: 2rem
 }
 
-#task-title-input {
-    display: block;
-    width: 15rem;
-    margin: 0 auto 1rem;
-}
 
-#task-notes-input {
-    width: 20rem;
-    height: 15rem;
-    padding-top: 0;
-    padding-left: 0;
-    margin: 0 0 1rem;
-}
+
+
 
 #addTaskModalBtn {
     border: 1px solid black;
@@ -86,35 +76,13 @@ body {
 
 
 
-.addProjMenu {
-    display: none;
-    position: absolute;
-    background-color: white;
-    z-index: 1;
-    width: 11.5rem;
-    border: 1px solid black;
-    margin: 1rem;
-    padding: 0.5rem;
-    
-}
 
-#proj-title-input {
-    width: 10rem;
-}
 
-#addProjDropDownBtn {
-    border: 1px solid black;
-    width: 10rem;
-    padding: 0.2rem;
-    text-align: center;
-    margin-top: 0.5rem;
-    cursor: pointer;
-}
 
-#addProjDropDownBtn:hover {
-    background-color: black;
-    color: white;
-}
+
+
+
+
 
 #taskArea {
     margin: 1vh auto;
@@ -144,28 +112,18 @@ body {
 
 
 
-.hidden {
-    display: none;
-}
-
-.show {
-    display: block;
-}
 
 
 
 
-#addTaskModal {
-    display: none;
-}
+
+
 
 .material-icons {
     cursor: pointer;
 }
 
-.fas {
-    cursor: pointer;
-}
+
 
 .collapsible-header {
     justify-content: space-between;
@@ -175,17 +133,15 @@ body {
     justify-content: space-between;
 }
 
-.project-title-input {
-    display: block;
-    width: 30vw;
-    margin: 5vh auto;
+
+
+
+
+
+
+
+#task-notes-input-wrapper {
+    margin-top: 5vh;
 }
 
-#modal1 {
-    width: 40vw;
-}
-
-#proj-title-input {
-    width: 100%
-}
 

@@ -16,15 +16,6 @@
  <body>
 
 
-   <div id='addTaskModal'>
-      <div id="addTaskMenu">
-         <div id="add-task-title"></div>
-         <input type="text" id='task-title-input'></input>
-         <div id="add-task-notes"></div>
-         <textarea type="text" id='task-notes-input'></textarea>
-         <div id="addTaskModalBtn"></div>
-      </div>
-   </div>
 
    
    
@@ -38,11 +29,7 @@
             <a class="waves-effect waves-light btn modal-trigger" href="#add-proj-modal"><i class="material-icons left">add</i>Add Project</a>
             <!-- Add Project Button to Open Modal -->
             
-            <div class="addProjMenu">
-               <div>Title of New Project</div>
-               <input type="text" id='proj-title-inputtest'></input>
-               <div id="addProjDropDownBtn">Add New Project</div>
-            </div>
+            
          </div>
       </div>
 
@@ -63,18 +50,51 @@
    <div id="add-proj-modal" class="modal">
      <div class="modal-content">
        <h4 class="center-align">New Project</h4>
-         <div class="input-field valign-wrapper">
-           <input id="proj-title-input" type="text" class="center-align validate">
-           <label id="proj-input-label" for="proj-title-input" class="center-align">Project Title</label>
-      </div>
-     </div>
-     <div class="modal-footer">
-       <a href="#!" class="waves-effect waves-green btn-flat center-align" id="add-new-proj-btn">Add New Project</a>
+         <div class="row">
+            <form class="col s12">
+              <div class="row">
+                <div class="input-field col s12">
+                  <input id="proj-title-input" type="text" class="validate">
+                  <label for="proj-title-input">Project Title</label>
+                </div>
+              </div>
+            </form>
+         </div>
+         <div class="modal-footer">
+            <a href="#!" class="waves-effect waves-green btn" id="add-new-proj-btn">Add New Project</a>
+          </div>
      </div>
    </div>
    <!-- End Add Project Modal -->
 
-   
+   <!-- Begin Add Task Modal -->
+   <div id="add-task-modal" class="modal">
+      <div class="modal-content">
+         <h4 id="task-modal-header" class="center-align">New Task</h4>
+         <div class="row">
+            <form class="col s12">
+               <div class="row">
+                  <div class="input-field col s12">
+                     <input id="task-title-input" type="text" class="validate">
+                     <label id="task-input-label" for="task-title-input">Task Title</label>
+                  </div>
+               </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <textarea id="task-notes-input" class="materialize-textarea"></textarea>
+                  <label id="task-notes-label" for="task-notes-input">Task Notes</label>
+                </div>
+              </div>
+            </form>
+          </div> 
+          <div class="modal-footer">
+            <a href="#!" class="waves-effect waves-green btn" id="add-new-task-btn">Add New Task</a>
+          </div>
+      </div>  
+   </div>
+    <!-- End Add Task Modal -->
+
+
 
 
   <script src="main.js"></script>
