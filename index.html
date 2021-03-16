@@ -16,17 +16,28 @@
  <body>
 
 
+   <nav>
+      <div class="nav-wrapper teal accent-4">
+        <a href="#" class="brand-logo center">Just ToDo It</a>
+        <ul id="nav-mobile" class="left">
+          <li><a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a></li>
+        </ul>
+      </div>
+    </nav>
 
-   
-   
+   <ul id="slide-out" class="sidenav">
+      <div id="sidenav-project-wrapper"></div>
+      <a id="sidenav-modal-addproj-btn" class="waves-effect waves-light btn modal-trigger" href="#add-proj-modal"><i class="material-icons left">add</i>Add Project</a>
+   </ul>
+    
  
    <div id="to-do-main" class="row">
-      <div id="projectArea" class="col s3">
+      <div id="projectArea" class="col s3 hide-on-med-and-down">
          <div id="projectList" class="row"></div>
          <div class="addProjWrapper">
 
             <!-- Add Project Button to Open Modal -->
-            <a class="waves-effect waves-light btn modal-trigger" href="#add-proj-modal"><i class="material-icons left">add</i>Add Project</a>
+            <a id="add-project-modal-open-btn" class="waves-effect waves-light btn modal-trigger" href="#add-proj-modal"><i class="material-icons left">add</i>Add Project</a>
             <!-- Add Project Button to Open Modal -->
             
             
@@ -49,13 +60,13 @@
    <!-- Begin Add Project Modal -->
    <div id="add-proj-modal" class="modal">
      <div class="modal-content">
-       <h4 class="center-align">New Project</h4>
+       <h4 class="center-align" id="project-modal-header">New Project</h4>
          <div class="row">
             <form class="col s12">
               <div class="row">
                 <div class="input-field col s12">
-                  <input id="proj-title-input" type="text" class="validate">
-                  <label for="proj-title-input">Project Title</label>
+                  <input id="proj-title-input" type="text" data-length="20" class="validate" >
+                  <label id="proj-input-label" for="proj-title-input">Project Title</label>
                 </div>
               </div>
             </form>
@@ -75,13 +86,13 @@
             <form class="col s12">
                <div class="row">
                   <div class="input-field col s12">
-                     <input id="task-title-input" type="text" class="validate">
+                     <input id="task-title-input" type="text" data-length="30" class="validate">
                      <label id="task-input-label" for="task-title-input">Task Title</label>
                   </div>
                </div>
               <div class="row">
                 <div class="input-field col s12">
-                  <textarea id="task-notes-input" class="materialize-textarea"></textarea>
+                  <textarea id="task-notes-input" data-length="500" class="materialize-textarea"></textarea>
                   <label id="task-notes-label" for="task-notes-input">Task Notes</label>
                 </div>
               </div>
@@ -93,7 +104,6 @@
       </div>  
    </div>
     <!-- End Add Task Modal -->
-
 
 
 
