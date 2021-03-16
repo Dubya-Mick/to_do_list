@@ -12393,6 +12393,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 const DOMController = (() => {
 
     //render projects, edit, and delete buttons for projects
@@ -12400,8 +12401,11 @@ const DOMController = (() => {
         //grab div containing list of projects
         let projList = document.getElementById('projectList');
         //clear display before repopulating
+        let sideNav = document.getElementById('sidenav-project-wrapper');
+        clearDisplay(sideNav);
         clearDisplay(projList);
         
+        let sideNavProjects = document.createDocumentFragment();
         let allProjectTitles = document.createDocumentFragment();
         //render those project titles to the DOM
         //adding event listeners as the divs are added
@@ -12411,28 +12415,16 @@ const DOMController = (() => {
             let projectTitle = document.createElement('div');
             projectTitle.textContent = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[i].title;
             projectTitle.classList.add('project');
-            projectTitle.addEventListener('click', (e) => {
-                setCurrentProjectOnClick(e);
-                displayCurrentProjectTitle();
-                renderTasks(e);
-                renderAddTaskBtn();
-            });
-
-
+ 
             //create edit button
             let editButton = document.createElement('a');
-            editButton.classList.add('waves-effect', 'waves-light', 'btn', 'projectEditButton');
+            editButton.classList.add('waves-effect', 'waves-light', 'btn', 'projectEditButton', 'modal-trigger');
             editButton.textContent = "Edit";
-            editButton.addEventListener('click', (e) => {
-                editProjectTitle(e);
-            });
-
+            editButton.href = "#add-proj-modal";
+ 
             //create delete button
             let deleteButton = document.createElement('a');
-            deleteButton.classList.add('waves-effect', 'waves-light', 'btn');
-            deleteButton.addEventListener('click', (e) => {
-                deleteProject(e);
-            })
+            deleteButton.classList.add('waves-effect', 'waves-light', 'btn', 'proj-delete-button');
 
             //create delete icon
             let deleteIcon = document.createElement('i');
@@ -12446,13 +12438,56 @@ const DOMController = (() => {
             deleteButton.setAttribute('data-projNum', `${i}`);
             deleteIcon.setAttribute('data-projNum', `${i}`);
 
+            //clone components for sidenav
+            let sideProj = projectTitle.cloneNode(true);
+            let sideEdit = editButton.cloneNode(true);
+            let sideDelete = deleteButton.cloneNode(true);
+
             //append items to the document frag before appending to DOM
             allProjectTitles.appendChild(projectTitle);
             allProjectTitles.appendChild(editButton);
             allProjectTitles.appendChild(deleteButton);
+
+            sideNavProjects.appendChild(sideProj);
+            sideNavProjects.appendChild(sideEdit);
+            sideNavProjects.appendChild(sideDelete);
+            
         }
+
         projList.appendChild(allProjectTitles);
+        sideNav.appendChild(sideNavProjects);
+        addProjectAreaEventListeners();
+       
+        
     }
+
+    const addProjectAreaEventListeners = () => {
+        let projectTitles = [...document.querySelectorAll('.project')];
+        for(let i = 0; i < projectTitles.length; i++) {
+            projectTitles[i].addEventListener('click', (e) => {
+                setCurrentProjectOnClick(e);
+                displayCurrentProjectTitle();
+                renderTasks(e);
+                renderAddTaskBtn();
+            })
+        } 
+
+        let projectEditButtons = [...document.querySelectorAll('.projectEditButton')];
+        for(let i = 0; i < projectEditButtons.length; i++) {
+            projectEditButtons[i].addEventListener('click', (e) => {
+                editProjectModalOpen(e);
+            })
+        }
+
+        let projectDeleteButtons = [...document.querySelectorAll('.proj-delete-button')];
+        for(let i = 0; i < projectDeleteButtons.length; i++) {
+            projectDeleteButtons[i].addEventListener('click', (e) => {
+                deleteProject(e);
+            })
+        }
+    
+    }
+ 
 
     const renderTasks = () => {
         //grab tasklist div
@@ -12475,6 +12510,7 @@ const DOMController = (() => {
             let dltBtn = document.createElement('a');
             let edtIcon = document.createElement('i');
             let dltIcon = document.createElement('i');
+            let edtDltWrapper = document.createElement('div');
 
             //create completion checkbox
             let checkBoxWrapper = document.createElement('label');
@@ -12497,6 +12533,7 @@ const DOMController = (() => {
             //add classes/types to main collapsible components for task list
             taskHeader.classList.add('collapsible-header');
             taskBody.classList.add('collapsible-body');
+            taskText.classList.add('task-notes')
             edtBtn.classList.add('waves-effect', 'waves-light', 'btn', 'modal-trigger');
             edtBtn.href = '#add-task-modal'; //link edit button to update task modal
             dltBtn.classList.add('waves-effect', 'waves-light', 'btn');
@@ -12505,9 +12542,16 @@ const DOMController = (() => {
             edtIcon.textContent = 'edit';
             dltIcon.textContent = 'delete';
 
-            //append icons to buttons
+            //add a little style to muh edit/delete buttons
+            dltBtn.style.margin = '2px';
+            edtBtn.style.margin = '2px';
+            edtDltWrapper.style.float = 'right';
+
+            //append icons to buttons, buttons to wrapper
             edtBtn.appendChild(edtIcon);
             dltBtn.appendChild(dltIcon);
+            edtDltWrapper.appendChild(edtBtn);
+            edtDltWrapper.appendChild(dltBtn);
             
             //add data attributes for tracing of task indices
             taskHeader.setAttribute('data-taskNum', `${i}`);
@@ -12531,8 +12575,7 @@ const DOMController = (() => {
 
             //append task notes and edit/delete buttons to body of collapsible
             taskBody.appendChild(taskText);
-            taskBody.appendChild(edtBtn);
-            taskBody.appendChild(dltBtn);
+            taskBody.appendChild(edtDltWrapper);
 
             //append checkbox to task header
             taskHeader.appendChild(checkBoxWrapper);
@@ -12592,10 +12635,31 @@ const DOMController = (() => {
         
     }
 
+    const addNewProjectModalOpen = () => {
+        //update project modal to reflect addition mode
+        let projectModalHeader = document.getElementById('project-modal-header');
+        projectModalHeader.textContent = 'Add Project';
+        let editProjectLabel = document.getElementById('proj-input-label');
+        editProjectLabel.classList.remove('active');
+        let editProjectModalBtn = document.getElementById('add-new-proj-btn');
+        editProjectModalBtn.textContent = "Add New Project";
+        editProjectModalBtn.removeEventListener('click', editProject);
+        editProjectModalBtn.addEventListener('click', addNewProject);
+    }
+
+    const addProjectModalEventListener = () => {
+        let addProjectModalOpenBtn = document.getElementById('add-project-modal-open-btn');
+        addProjectModalOpenBtn.addEventListener('click', addNewProjectModalOpen);
+        let sidenavAddProjBtn = document.getElementById('sidenav-modal-addproj-btn');
+        sidenavAddProjBtn.addEventListener('click', addNewProjectModalOpen);
+    }
+
     const addNewProject = () => {
         let newProjTitle = document.querySelector("#proj-title-input").value;
             if(newProjTitle.length == 0) {
-                M.toast({html: 'Give us a project title!'})
+                M.toast({html: 'Give us a project title!'});
+            } else if (newProjTitle.length > 20) {
+                M.toast({html: 'Shorten up this here title.'});
             } else {
                 var modalInstance = M.Modal.getInstance(document.getElementById('add-proj-modal'));
                 _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addProject(newProjTitle); //add project
@@ -12610,36 +12674,38 @@ const DOMController = (() => {
         addProjBtn.addEventListener('click', addNewProject);
     }
 
-    //controls editing of new project title
-    //click makes the title editable and changes the icon to a checkmark
-    //clicking the checkmark adds the new project and updates the displayed project
-    const editProjectTitle = (e) => {
-        let projectIndex = e.target.getAttribute('data-ProjNum');
-        let editBtn = e.target;
-        let projectTitleToEdit = e.target.previousSibling; //grab the project title
+   
 
-        //check if other projects are currently editable and disable editing if so
-        let projectEditBtns = [...document.querySelectorAll('.projectEditButton')];
-        for (let i = 0; i < projectEditBtns.length; i++) {
-            if(projectEditBtns[i].textContent =  true && projectEditBtns[i] != editBtn) {
-                projectEditBtns[i].textContent = 'edit';
-                projectEditBtns[i].previousSibling.style.backgroundColor = 'white';
-                projectEditBtns[i].previousSibling.contentEditable = 'false';
-            }
-        }
-        //if project is currently editable, clicking the checkmark updates the title
-        if (projectTitleToEdit.contentEditable == 'true') {
-            editBtn.textContent = 'edit';
-            projectTitleToEdit.contentEditable = 'false';
-            projectTitleToEdit.style.backgroundColor = 'white';
-            _logicController__WEBPACK_IMPORTED_MODULE_0__.default.editProject(projectIndex, projectTitleToEdit.textContent);
-            renderProjectArea();
-            displayCurrentProjectTitle();
-        //otherwise --> make the title editable
+    const editProjectModalOpen = (e) => {
+        //change add project modal to reflect edit mode
+        let projectIndex = e.target.getAttribute('data-projNum');
+        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.setCurrentProject(projectIndex);
+        let projectModalHeader = document.getElementById('project-modal-header');
+        projectModalHeader.textContent = 'Edit Project';
+        let projectTitleInput = document.getElementById('proj-title-input');
+        projectTitleInput.value = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].title;
+        let editProjectLabel = document.getElementById('proj-input-label');
+        editProjectLabel.classList.add('active');
+        let editProjectModalBtn = document.getElementById('add-new-proj-btn');
+        editProjectModalBtn.textContent = "Update Project Title";
+        editProjectModalBtn.removeEventListener('click', addNewProject);
+        editProjectModalBtn.addEventListener('click', editProject);
+        
+    }
+
+    const editProject = () => {
+        let projectIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
+        let newProjTitle = document.querySelector("#proj-title-input").value;
+        if(newProjTitle.length == 0) {
+            M.toast({html: 'Give us a project title!'});
+        } else if (newProjTitle.length > 20) {
+            M.toast({html: 'Shorten up this here title.'});
         } else {
-            editBtn.textContent = 'done';
-            projectTitleToEdit.contentEditable = 'true';
-            projectTitleToEdit.style.backgroundColor = '#87ceff';
+            var modalInstance = M.Modal.getInstance(document.getElementById('add-proj-modal'));
+            _logicController__WEBPACK_IMPORTED_MODULE_0__.default.editProject(projectIndex, newProjTitle); //update project title
+            renderProjectArea(); 
+            modalInstance.close();
+            document.querySelector("#proj-title-input").value = ''; //empty text input
         }
     }
 
@@ -12647,16 +12713,18 @@ const DOMController = (() => {
         //grab corresponding index of proj from data-attribute of trash button
         //grab div for proper removal of DOM elements as projects are deleted
         let projectIndex = e.target.getAttribute('data-projNum');
-        let projectTitles = document.querySelectorAll('.project');
+        let numberOfProjects = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects.length;
         let taskList = document.querySelector('#taskList');
         let projTitleDisplay = document.querySelector('#projTitle');
         //reset task list if no projects remain after deleting last one
-        if (projectTitles.length == 1) {
+        if (numberOfProjects == 1) {
             _logicController__WEBPACK_IMPORTED_MODULE_0__.default.deleteProject(projectIndex);
             renderProjectArea();
             clearDisplay(taskList);
             projTitleDisplay.textContent = "Project Title";
-            document.getElementById('addTaskBtn').outerHTML = '';
+            if (document.getElementById('addTaskBtn')) {
+                document.getElementById('addTaskBtn').outerHTML = '';
+            }
             //if to-be-deleted project is the current active project,
             //update the current project to first in the list and display
         } else if (_logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex() == projectIndex) {
@@ -12696,8 +12764,12 @@ const DOMController = (() => {
         let taskNotesInput = document.getElementById('task-notes-input').value;
         if (taskTitleInput.length < 1) {
             M.toast({html: 'The title of this task seems a little short!'});
-        } else if (taskNotesInput < 1) {
+        } else if (taskTitleInput.length > 30) {
+            M.toast({html: 'Shorten up this here task title.'});
+        } else if (taskNotesInput.length < 1) {
             M.toast({html: 'Give us some more detail in the notes!'});
+        } else if (taskNotesInput.length > 500) {
+            M.toast({html: 'Shorten up these here notes!'});
         } else {
             _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(_logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex(), taskTitleInput, taskNotesInput, false);
             var modalInstance = M.Modal.getInstance(document.getElementById('add-task-modal'));
@@ -12809,14 +12881,31 @@ const DOMController = (() => {
             var instances = M.Modal.init(elems, true);
           });
     }
+
+    const materializeSideNav = () => {
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.sidenav');
+            var instances = M.Sidenav.init(elems, true);
+          });
+    }
+
+    const materializeCharacterCount = () => {
+        document.addEventListener('DOMContentLoaded', function () {
+            var textNeedCount = document.querySelectorAll('#proj-title-input, #task-title-input, #task-notes-input');
+            M.CharacterCounter.init(textNeedCount);
+        });
+    }
     
     const renderDOM = () => {
         setTutorialProject();
         renderProjectArea();
         addNewProjectEventListener();
+        addProjectModalEventListener();
         addNewTaskEventListener();
         materializeCollapsible(); 
-        materializeModal();   
+        materializeModal(); 
+        materializeSideNav();  
+        materializeCharacterCount();
     }
 
 
