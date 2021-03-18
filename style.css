@@ -89,6 +89,12 @@ html, body {
     }
 }
 
+@media only screen and (max-width: 560px) {
+    #taskArea {
+        width: 85vw;
+    }
+}
+
 
 #task-list-wrapper {
     
@@ -122,6 +128,24 @@ html, body {
     cursor: pointer;
 }
 
+.task-title {
+    width: 12rem;
+    text-align: center;
+    font-weight: bold;
+    
+}
+
+
+
+.check-box-wrapper {
+    width: 12rem;
+    text-align: center;;
+}
+
+.due-date {
+    width: 12rem;
+    text-align: center;
+}
 .collapsible-header {
     justify-content: space-between;
 }

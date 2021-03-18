@@ -12469,6 +12469,7 @@ const DOMController = (() => {
         
     }
 
+    //add event listeners for project titles, edit and delete buttons
     const addProjectAreaEventListeners = () => {
         let projectTitles = [...document.querySelectorAll('.project')];
         for(let i = 0; i < projectTitles.length; i++) {
@@ -12496,7 +12497,7 @@ const DOMController = (() => {
     
     }
  
-
+    //render task area in materialize collapsible format
     const renderTasks = () => {
         //grab tasklist div
         let taskList = document.querySelector('#taskList');
@@ -12512,6 +12513,7 @@ const DOMController = (() => {
             //create collapsible components for task list
             let taskContainer = document.createElement('li');
             let taskHeader = document.createElement('div');
+            let taskTitle = document.createElement('span');
             let taskBody = document.createElement('div');
             let taskText = document.createElement('span');
             let edtBtn = document.createElement('a');
@@ -12522,12 +12524,24 @@ const DOMController = (() => {
 
             //create completion checkbox
             let checkBoxWrapper = document.createElement('label');
+            checkBoxWrapper.classList.add('check-box-wrapper');
             let checkBox = document.createElement('input');
             checkBox.type = 'checkbox';
+            checkBox.classList.add('orange', 'darken-2');
             let checkBoxText = document.createElement('span');
             checkBoxText.textContent = 'Complete?';
             checkBoxWrapper.appendChild(checkBox);
             checkBoxWrapper.appendChild(checkBoxText);
+
+            //create span to contain due date for task
+            let dueDate = document.createElement('span');
+            dueDate.classList.add('due-date');
+            if (_logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[i].dueDate) {
+                dueDate.textContent = `Due: ${_logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[i].dueDate}`
+            } else {
+                dueDate.textContent = "Due Date: None";
+            }
+            
 
             //logic to control display of already completed tasks
             if (_logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[i].isComplete == true) {
@@ -12540,6 +12554,7 @@ const DOMController = (() => {
             
             //add classes/types to main collapsible components for task list
             taskHeader.classList.add('collapsible-header');
+            taskTitle.classList.add('task-title');
             taskBody.classList.add('collapsible-body');
             taskText.classList.add('task-notes')
             edtBtn.classList.add('waves-effect', 'waves-light', 'btn', 'modal-trigger');
@@ -12565,9 +12580,11 @@ const DOMController = (() => {
             //add data attributes for tracing of task indices
             taskHeader.setAttribute('data-taskNum', `${i}`);
             checkBox.setAttribute('data-taskNum', `${i}`);
+            taskTitle.setAttribute('data-taskNum', `${i}`);
+            dueDate.setAttribute('data-taskNum', `${i}`);
 
-            //fill textContent for task name and notes
-            taskHeader.textContent = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[i].title;
+            //fill textContent for task title and notes
+            taskTitle.textContent = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[i].title;
             taskText.textContent = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[i].notes;
             
             //add event listeners to components
@@ -12586,11 +12603,12 @@ const DOMController = (() => {
             taskBody.appendChild(taskText);
             taskBody.appendChild(edtDltWrapper);
 
-            //append checkbox to task header
-            let test = document.createElement('span');
-            test.textContent = "Due: May, 16, 1991";
-            taskHeader.appendChild(test);
+            //append title, checkbox, and due date to task header
             taskHeader.appendChild(checkBoxWrapper);
+            taskHeader.appendChild(taskTitle);
+            
+            taskHeader.appendChild(dueDate);
+
             
             
 
@@ -12649,6 +12667,7 @@ const DOMController = (() => {
         
     }
 
+    //updates project modal window to reflect editing mode
     const addNewProjectModalOpen = () => {
         //update project modal to reflect addition mode
         let projTitleInput = document.getElementById('proj-title-input');
@@ -12663,6 +12682,7 @@ const DOMController = (() => {
         editProjectModalBtn.addEventListener('click', addNewProject);
     }
 
+    //adds event listener to for opening modal windows for project addition
     const addProjectModalEventListener = () => {
         let addProjectModalOpenBtn = document.getElementById('add-project-modal-open-btn');
         addProjectModalOpenBtn.addEventListener('click', addNewProjectModalOpen);
@@ -12670,6 +12690,7 @@ const DOMController = (() => {
         sidenavAddProjBtn.addEventListener('click', addNewProjectModalOpen);
     }
 
+    //adds new project and renders result to DOM
     const addNewProject = () => {
         let newProjTitle = document.querySelector("#proj-title-input").value;
             if(newProjTitle.length == 0) {
@@ -12685,13 +12706,13 @@ const DOMController = (() => {
             }
     }
 
+    //adds event listener for adding project in modal window
     const addNewProjectEventListener = () => {
         let addProjBtn = document.querySelector('#add-new-proj-btn');
         addProjBtn.addEventListener('click', addNewProject);
     }
 
-   
-
+    //updates modal window to reflect project editing mode
     const editProjectModalOpen = (e) => {
         //change add project modal to reflect edit mode
         let projectIndex = e.target.getAttribute('data-projNum');
@@ -12710,6 +12731,7 @@ const DOMController = (() => {
         
     }
 
+    //updates project info and renders result to DOM
     const editProject = () => {
         let projectIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
         let newProjTitle = document.querySelector("#proj-title-input").value;
@@ -12726,6 +12748,7 @@ const DOMController = (() => {
         }
     }
 
+    //add event listener for closure of modal window if no deletion desired
     const cancelDeleteEventListener = () => {
         let cancelButton = document.getElementById('cancel-modal-btn');
         cancelButton.addEventListener('click', () => {
@@ -12734,6 +12757,7 @@ const DOMController = (() => {
         })
     }
 
+    //updates deletion modal to reflect deletion of project
     const deleteProjectModalOpen = (e) => {
         let projectIndex = e.target.getAttribute('data-projNum');
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.setCurrentProject(projectIndex);
@@ -12748,6 +12772,7 @@ const DOMController = (() => {
         
     }
 
+    //deletes project and renders result to DOM
     const deleteProject = () => {
         //grab corresponding index of proj from data-attribute of trash button
         //grab div for proper removal of DOM elements as projects are deleted
@@ -12782,30 +12807,39 @@ const DOMController = (() => {
     }
 
 
-
+    //update task modal window to reflect addition mode
     const addTaskModalOpen = () => {
         //change new task modal window text to reflect add task mode
         let taskModalHeader = document.getElementById('task-modal-header');
         taskModalHeader.textContent = 'Add New Task'
         let addTaskTitle = document.getElementById('task-input-label');
         addTaskTitle.textContent = 'Task Title';
+        addTaskTitle.classList.remove('active');
         let addTaskNotes = document.getElementById('task-notes-label');
         addTaskNotes.textContent = 'Notes';
+        addTaskNotes.classList.remove('active');
+        let datePickerLabel = document.getElementById('date-picker-label');
+        datePickerLabel.classList.remove('active');
         let addTaskModalBtn = document.getElementById('add-new-task-btn');
         addTaskModalBtn.textContent = "Add Task";
         let taskTitleInput = document.getElementById('task-title-input');
         taskTitleInput.value = '';
         let taskNotesInput = document.getElementById('task-notes-input');
         taskNotesInput.value  = '';
+        let datePicker = document.getElementById('date-picker');
+        datePicker.value = '';
 
 
         addTaskModalBtn.removeEventListener('click', editTask);
         addTaskModalBtn.addEventListener('click', addTask);
     }
 
+    //adds task and renders result to DOM
     const addTask = () => {
         let taskTitleInput = document.getElementById('task-title-input').value;
         let taskNotesInput = document.getElementById('task-notes-input').value;
+        let taskDueDate = document.getElementById('date-picker').value;
+        console.log(taskDueDate);
         if (taskTitleInput.length < 1) {
             M.toast({html: 'The title of this task seems a little short!'});
         } else if (taskTitleInput.length > 30) {
@@ -12815,18 +12849,21 @@ const DOMController = (() => {
         } else if (taskNotesInput.length > 500) {
             M.toast({html: 'Shorten up these here notes!'});
         } else {
-            _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(_logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex(), taskTitleInput, taskNotesInput, false);
+            _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(_logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex(), taskTitleInput, taskNotesInput, false, taskDueDate);
             var modalInstance = M.Modal.getInstance(document.getElementById('add-task-modal'));
             modalInstance.close();
             renderTasks();
+            datePicker.value = '';
         }
     }
 
+    //adds event listener to add task button in modal window
     const addNewTaskEventListener = () => {
         let addTaskModalBtn = document.getElementById('add-new-task-btn');
         addTaskModalBtn.addEventListener('click', addTask);
     }
 
+    //updates delete modal to reflect deletion of task
     const deleteTaskModalOpen = () => {
         let taskTitle = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentTaskTitle();
         let deleteTaskHeader = document.getElementById('delete-modal-header');
@@ -12838,6 +12875,7 @@ const DOMController = (() => {
         deleteTaskButton.addEventListener('click', deleteTask);
     }
 
+    //deletes task and renders result to DOM
     const deleteTask = () => {
         let projectIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
         let taskIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentTaskIndex();
@@ -12847,11 +12885,13 @@ const DOMController = (() => {
         modalInstance.close();
     }
 
+    //edits task and redners result to DOM
     const editTask = () => {
         let projectIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
         let taskIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentTaskIndex();
         let editedTitle = document.getElementById('task-title-input').value;
         let editedNotes = document.getElementById('task-notes-input').value;
+        let editedDueDate = document.getElementById('date-picker').value;
         if (editedTitle.length < 1) {
             M.toast({html: 'The title of this task seems a little short!'});
         } else if (editedNotes.length < 1) {
@@ -12859,6 +12899,7 @@ const DOMController = (() => {
         } else {
             _logicController__WEBPACK_IMPORTED_MODULE_0__.default.editTaskTitle(projectIndex, taskIndex, editedTitle);
             _logicController__WEBPACK_IMPORTED_MODULE_0__.default.editTaskNotes(projectIndex, taskIndex, editedNotes);
+            _logicController__WEBPACK_IMPORTED_MODULE_0__.default.editTaskDueDate(projectIndex, taskIndex, editedDueDate);
             var modalInstance = M.Modal.getInstance(document.getElementById('add-task-modal'));
             modalInstance.close();
             renderTasks();
@@ -12882,25 +12923,32 @@ const DOMController = (() => {
         editTaskNotes.textContent = 'Edit Notes';
         let editTaskModalBtn = document.getElementById('add-new-task-btn');
         editTaskModalBtn.textContent = "Edit Task";
+        let datePickerLabel = document.getElementById('date-picker-label');
+        datePickerLabel.classList.add('active');
         //display current title for editing
         let editTitleInput = document.getElementById('task-title-input');
         
         editTitleInput.value = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[taskIndex].title;
         //display current notes for editing
         let editNotesInput = document.getElementById('task-notes-input');
-        
         editNotesInput.value = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[taskIndex].notes;
+
+        //display current date for editing
+        let datePicker = document.getElementById('date-picker');
+        datePicker.value = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[projectIndex].tasks[taskIndex].dueDate;
         //remove add task event listener and replace with edit task event listener
         editTaskModalBtn.removeEventListener('click', addTask);
         editTaskModalBtn.addEventListener('click', editTask);
     }
 
+    //controls toggling of task completion checkbox
     const toggleTaskComplete = (e) => {
         let projectIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
         let taskIndex = e.target.getAttribute('data-taskNum');
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.toggleComplete(projectIndex, taskIndex);
     }
 
+    //updates checkbox label to reflect completion
     const checkBoxLabelComplete = (e) => {
         let projectIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
         let taskIndex = e.target.getAttribute('data-taskNum');
@@ -12918,10 +12966,11 @@ const DOMController = (() => {
         }
     }
 
+    //sets default project/task on load
     const setTutorialProject = () => {
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addProject('Example Project');
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.setCurrentProject(0);
-        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(0, 'Example Task: Click me!', 'Use the edit and delete buttons to update your tasks', false);
+        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(0, 'Example Task: Click me!', 'Use the edit and delete buttons to update your tasks', false, 'Mar 20, 2021');
 
     }
 
@@ -12956,7 +13005,9 @@ const DOMController = (() => {
     const materializeDatePicker = () => {
         document.addEventListener('DOMContentLoaded', function() {
             var elems = document.querySelectorAll('.datepicker');
-            var instances = M.Datepicker.init(elems, true);
+            var instances = M.Datepicker.init(elems, {
+                container: document.getElementsByTagName('body') //sets container div for date picker
+            });
           });
     }
     
@@ -13039,8 +13090,8 @@ const logicController = (() => {
         return {title, tasks};
     }
 
-    const taskFactory = (title, notes, isComplete) => {
-        return {title, notes, isComplete};
+    const taskFactory = (title, notes, isComplete, dueDate) => {
+        return {title, notes, isComplete, dueDate};
     }
 
     const addProject = (title) => {
@@ -13082,8 +13133,8 @@ const logicController = (() => {
     }
 
 
-    const addTask = (projectIndex, title, notes, isComplete) => {
-        projects[projectIndex].tasks.push(taskFactory(title, notes, isComplete));
+    const addTask = (projectIndex, title, notes, isComplete, dueDate) => {
+        projects[projectIndex].tasks.push(taskFactory(title, notes, isComplete, dueDate));
     }
 
     const editTaskTitle = (projectIndex, taskIndex, title) => {
@@ -13097,6 +13148,10 @@ const logicController = (() => {
 
     const editTaskNotes = (projectIndex, taskIndex, notes) => {
         projects[projectIndex].tasks[taskIndex].notes = notes;
+    }
+
+    const editTaskDueDate = (projectIndex, taskIndex, dueDate) => {
+        projects[projectIndex].tasks[taskIndex].dueDate = dueDate;
     }
 
     const toggleComplete = (projectIndex, taskIndex) => {
@@ -13122,6 +13177,7 @@ const logicController = (() => {
         editTaskTitle,
         deleteTask,
         editTaskNotes,
+        editTaskDueDate,
         toggleComplete,
     }
 
