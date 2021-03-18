@@ -3,13 +3,10 @@
  <head>
    <link rel="stylesheet" href="style.css">
    <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
-   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" integrity="sha384-vSIIfh2YWi9wW0r9iZe7RJPrKwp6bG+s9QZMoITbCckVJqGCCRhc+ccxNcdpHuYu" crossorigin="anonymous">
-    <!-- Compiled and minified CSS -->
+   
+    <!-- Materialize CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-
-    <!-- Compiled and minified JavaScript -->
-    
-        
+    <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
  </head>
@@ -22,6 +19,7 @@
         <ul id="nav-mobile" class="left">
           <li><a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a></li>
         </ul>
+        <ul id="good-joke" class="right hide-on-med-and-down">"Let's just say it's been on my to do list, haha"</ul>
       </div>
     </nav>
 
@@ -31,8 +29,8 @@
    </ul>
     
  
-   <div id="to-do-main" class="row">
-      <div id="projectArea" class="col s3 hide-on-med-and-down">
+   <div id="to-do-main" class="">
+      <div id="projectArea" class="col s3 hide-on-med-and-down z-depth-2">
          <div id="projectList" class="row"></div>
          <div class="addProjWrapper">
 
@@ -85,7 +83,7 @@
          <div class="row">
             <form class="col s12">
                <div class="row">
-                  <div class="input-field col s12">
+                  <div class="input-field col s6">
                      <input id="task-title-input" type="text" data-length="30" class="validate">
                      <label id="task-input-label" for="task-title-input">Task Title</label>
                   </div>
@@ -96,6 +94,12 @@
                   <label id="task-notes-label" for="task-notes-input">Task Notes</label>
                 </div>
               </div>
+              <div class="row">
+                <div class="input-field col s6">
+                  <input type="text" class="datepicker" id="date-picker">
+                  <label id="date-picker-label" for="date-picker">Due Date</label>
+                </div>
+              </div>
             </form>
           </div> 
           <div class="modal-footer">
@@ -104,6 +108,18 @@
       </div>  
    </div>
     <!-- End Add Task Modal -->
+
+    <!-- Begin Delete Modal -->
+    <div id="delete-modal" class="modal">
+      <div class="modal-content">
+        <h4 class="center-align" id="delete-modal-header"></h4>
+          <div class="center-align">
+            <a href="#!" class="waves-effect waves-green btn" id="cancel-modal-btn">Cancel</a> 
+            <a href="#!" class="waves-effect waves-green btn" id="delete-modal-btn"></a>
+          </div>
+      </div>
+    </div>
+    <!-- End Delete Modal -->
 
 
 

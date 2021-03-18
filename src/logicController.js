@@ -36,12 +36,20 @@ const logicController = (() => {
         return projects.indexOf(currentProject);
     }
 
+    const getCurrentProjectTitle = () => {
+        return currentProject.title;
+    }
+
     const setCurrentTask = (index) => {
         currentTask = currentProject.tasks[index];
     }
 
     const getCurrentTaskIndex = () => {
         return currentProject.tasks.indexOf(currentTask);
+    }
+
+    const getCurrentTaskTitle = () => {
+        return currentTask.title;
     }
 
 
@@ -74,8 +82,10 @@ const logicController = (() => {
         projects,
         setCurrentProject,
         getCurrentProjectIndex,
+        getCurrentProjectTitle,
         setCurrentTask,
         getCurrentTaskIndex,
+        getCurrentTaskTitle,
         addProject,
         editProject,
         deleteProject,

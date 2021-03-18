@@ -4,6 +4,7 @@ import Modal from 'materialize-css';
 import Toasts from 'materialize-css';
 import Sidenav from 'materialize-css';
 import CharacterCounter from 'materialize-css';
+import Datepicker from 'materialize-css';
 
 const DOMController = (() => {
 
@@ -30,12 +31,18 @@ const DOMController = (() => {
             //create edit button
             let editButton = document.createElement('a');
             editButton.classList.add('waves-effect', 'waves-light', 'btn', 'projectEditButton', 'modal-trigger');
-            editButton.textContent = "Edit";
             editButton.href = "#add-proj-modal";
+
+            //create edit icon
+            let editIcon = document.createElement('i');
+            editIcon.classList.add('material-icons');
+            editIcon.textContent = 'edit'
+            editButton.appendChild(editIcon);
  
             //create delete button
             let deleteButton = document.createElement('a');
-            deleteButton.classList.add('waves-effect', 'waves-light', 'btn', 'proj-delete-button');
+            deleteButton.classList.add('waves-effect', 'waves-light', 'btn', 'modal-trigger', 'proj-delete-button');
+            deleteButton.href = "#delete-modal";
 
             //create delete icon
             let deleteIcon = document.createElement('i');
@@ -46,6 +53,7 @@ const DOMController = (() => {
             //add data-attributes so items can be tracked
             projectTitle.setAttribute('data-projNum', `${i}`);
             editButton.setAttribute('data-projNum', `${i}`);
+            editIcon.setAttribute('data-projNum', `${i}`);
             deleteButton.setAttribute('data-projNum', `${i}`);
             deleteIcon.setAttribute('data-projNum', `${i}`);
 
@@ -93,7 +101,7 @@ const DOMController = (() => {
         let projectDeleteButtons = [...document.querySelectorAll('.proj-delete-button')];
         for(let i = 0; i < projectDeleteButtons.length; i++) {
             projectDeleteButtons[i].addEventListener('click', (e) => {
-                deleteProject(e);
+                deleteProjectModalOpen(e);
             })
         }
     
@@ -147,7 +155,8 @@ const DOMController = (() => {
             taskText.classList.add('task-notes')
             edtBtn.classList.add('waves-effect', 'waves-light', 'btn', 'modal-trigger');
             edtBtn.href = '#add-task-modal'; //link edit button to update task modal
-            dltBtn.classList.add('waves-effect', 'waves-light', 'btn');
+            dltBtn.classList.add('waves-effect', 'waves-light', 'btn', 'modal-trigger');
+            dltBtn.href = '#delete-modal';
             edtIcon.classList.add('material-icons');
             dltIcon.classList.add('material-icons');
             edtIcon.textContent = 'edit';
@@ -180,7 +189,7 @@ const DOMController = (() => {
                     toggleTaskComplete(e);
                     checkBoxLabelComplete(e);
             });
-            dltBtn.addEventListener('click', deleteTask);
+            dltBtn.addEventListener('click', deleteTaskModalOpen);
             edtBtn.addEventListener('click', editTaskModalOpen);
 
 
@@ -189,7 +198,12 @@ const DOMController = (() => {
             taskBody.appendChild(edtDltWrapper);
 
             //append checkbox to task header
+            let test = document.createElement('span');
+            test.textContent = "Due: May, 16, 1991";
+            taskHeader.appendChild(test);
             taskHeader.appendChild(checkBoxWrapper);
+            
+            
 
             //append task header and body to task container
             taskContainer.appendChild(taskHeader);
@@ -248,6 +262,8 @@ const DOMController = (() => {
 
     const addNewProjectModalOpen = () => {
         //update project modal to reflect addition mode
+        let projTitleInput = document.getElementById('proj-title-input');
+        projTitleInput.value = '';
         let projectModalHeader = document.getElementById('project-modal-header');
         projectModalHeader.textContent = 'Add Project';
         let editProjectLabel = document.getElementById('proj-input-label');
@@ -291,10 +307,11 @@ const DOMController = (() => {
         //change add project modal to reflect edit mode
         let projectIndex = e.target.getAttribute('data-projNum');
         logicController.setCurrentProject(projectIndex);
+        let projectTitle = logicController.getCurrentProjectTitle();
         let projectModalHeader = document.getElementById('project-modal-header');
         projectModalHeader.textContent = 'Edit Project';
         let projectTitleInput = document.getElementById('proj-title-input');
-        projectTitleInput.value = logicController.projects[projectIndex].title;
+        projectTitleInput.value = `${projectTitle}`;
         let editProjectLabel = document.getElementById('proj-input-label');
         editProjectLabel.classList.add('active');
         let editProjectModalBtn = document.getElementById('add-new-proj-btn');
@@ -320,13 +337,37 @@ const DOMController = (() => {
         }
     }
 
-    const deleteProject = (e) => {
+    const cancelDeleteEventListener = () => {
+        let cancelButton = document.getElementById('cancel-modal-btn');
+        cancelButton.addEventListener('click', () => {
+            let modalInstance = M.Modal.getInstance(document.getElementById('delete-modal'));
+            modalInstance.close();
+        })
+    }
+
+    const deleteProjectModalOpen = (e) => {
+        let projectIndex = e.target.getAttribute('data-projNum');
+        logicController.setCurrentProject(projectIndex);
+        let projectTitle = logicController.getCurrentProjectTitle();
+        let deleteProjectHeader = document.getElementById('delete-modal-header');
+        deleteProjectHeader.textContent = `Delete "${projectTitle}?"`;
+        let deleteProjectButton = document.getElementById('delete-modal-btn');
+        deleteProjectButton.textContent = "Delete Project"
+
+        deleteProjectButton.removeEventListener('click', deleteTask);
+        deleteProjectButton.addEventListener('click', deleteProject);
+        
+    }
+
+    const deleteProject = () => {
         //grab corresponding index of proj from data-attribute of trash button
         //grab div for proper removal of DOM elements as projects are deleted
-        let projectIndex = e.target.getAttribute('data-projNum');
+        let projectIndex = logicController.getCurrentProjectIndex();
         let numberOfProjects = logicController.projects.length;
         let taskList = document.querySelector('#taskList');
         let projTitleDisplay = document.querySelector('#projTitle');
+        let modalInstance = M.Modal.getInstance(document.getElementById('delete-modal'));
+
         //reset task list if no projects remain after deleting last one
         if (numberOfProjects == 1) {
             logicController.deleteProject(projectIndex);
@@ -348,7 +389,10 @@ const DOMController = (() => {
             logicController.deleteProject(projectIndex);
             renderProjectArea();
         }
+        modalInstance.close();
     }
+
+
 
     const addTaskModalOpen = () => {
         //change new task modal window text to reflect add task mode
@@ -394,11 +438,24 @@ const DOMController = (() => {
         addTaskModalBtn.addEventListener('click', addTask);
     }
 
+    const deleteTaskModalOpen = () => {
+        let taskTitle = logicController.getCurrentTaskTitle();
+        let deleteTaskHeader = document.getElementById('delete-modal-header');
+        deleteTaskHeader.textContent = `Delete "${taskTitle}?"`
+        let deleteTaskButton = document.getElementById('delete-modal-btn');
+        deleteTaskButton.textContent = "Delete Task"
+
+        deleteTaskButton.removeEventListener('click', deleteProject);
+        deleteTaskButton.addEventListener('click', deleteTask);
+    }
+
     const deleteTask = () => {
         let projectIndex = logicController.getCurrentProjectIndex();
         let taskIndex = logicController.getCurrentTaskIndex();
+        let modalInstance = M.Modal.getInstance(document.getElementById('delete-modal'));
         logicController.deleteTask(projectIndex, taskIndex);
         renderTasks();
+        modalInstance.close();
     }
 
     const editTask = () => {
@@ -506,17 +563,29 @@ const DOMController = (() => {
             M.CharacterCounter.init(textNeedCount);
         });
     }
+
+    const materializeDatePicker = () => {
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.datepicker');
+            var instances = M.Datepicker.init(elems, true);
+          });
+    }
     
     const renderDOM = () => {
         setTutorialProject();
         renderProjectArea();
+        renderTasks();
+        renderAddTaskBtn();
+        displayCurrentProjectTitle();
         addNewProjectEventListener();
         addProjectModalEventListener();
         addNewTaskEventListener();
+        cancelDeleteEventListener();
         materializeCollapsible(); 
         materializeModal(); 
         materializeSideNav();  
         materializeCharacterCount();
+        materializeDatePicker();
     }
 
 
