@@ -5,6 +5,7 @@ import Toasts from 'materialize-css';
 import Sidenav from 'materialize-css';
 import CharacterCounter from 'materialize-css';
 import Datepicker from 'materialize-css';
+import { parse } from 'date-fns';
 
 const DOMController = (() => {
 
@@ -229,7 +230,7 @@ const DOMController = (() => {
 
             allTasks.appendChild(taskContainer);
         }
-
+        renderSortBar();
         taskList.appendChild(allTasks);
     }
             
@@ -254,28 +255,65 @@ const DOMController = (() => {
 
     //creates the button for adding tasks
     const renderAddTaskBtn = () => {
-        let taskWrapper = document.querySelector('.task-list-wrapper');
-        let addTaskBtn = document.createElement('a');
-        let addTaskIcon = document.createElement('i');
-
-        addTaskIcon.classList.add('material-icons', 'left');
-        addTaskIcon.textContent = 'add';
-
-        addTaskBtn.classList.add('waves-effect', 'waves-light', 'btn', 'modal-trigger');
-        addTaskBtn.textContent = 'Add Task';
-        addTaskBtn.setAttribute('id', 'addTaskBtn');
-
-        addTaskBtn.appendChild(addTaskIcon);
-        addTaskBtn.href = '#add-task-modal';
-        addTaskBtn.addEventListener('click', addTaskModalOpen);
-
-        if (document.querySelector('#addTaskBtn') != null) {
+        if (document.querySelector('#addTaskBtn')) {
             return
         } else {
+            let taskWrapper = document.querySelector('.task-list-wrapper');
+            let addTaskBtn = document.createElement('a');
+            let addTaskIcon = document.createElement('i');
+
+            addTaskIcon.classList.add('material-icons', 'left');
+            addTaskIcon.textContent = 'add';
+
+            addTaskBtn.classList.add('waves-effect', 'waves-light', 'btn', 'modal-trigger');
+            addTaskBtn.textContent = 'Add Task';
+            addTaskBtn.setAttribute('id', 'addTaskBtn');
+
+            addTaskBtn.appendChild(addTaskIcon);
+            addTaskBtn.href = '#add-task-modal';
+            addTaskBtn.addEventListener('click', addTaskModalOpen);
             taskWrapper.appendChild(addTaskBtn);
         }
+    }
 
-        
+    const renderSortBar = () => {
+        if (document.querySelector('#sort-bar')) {
+            return
+        } else {
+
+            let taskArea = document.getElementById('taskArea');
+
+            let sortBar = document.createElement('div');
+            sortBar.setAttribute('id', 'sort-bar');
+
+            let clearComplete = document.createElement('div');
+            clearComplete.setAttribute('id', 'clear-complete');
+            clearComplete.classList.add('sort-button');
+            clearComplete.textContent = 'Clear Complete';
+
+            let alphaSort = document.createElement('div');
+            alphaSort.setAttribute('id', 'alpha-sort');
+            alphaSort.classList.add('sort-button');
+            alphaSort.textContent = "A-Z";
+
+            let dateSort = document.createElement('div');
+            dateSort.setAttribute('id', 'date-sort');
+            dateSort.classList.add('sort-button');
+            dateSort.textContent = "Date";
+            dateSort.addEventListener('click', () => {
+                sortByDate();
+            });
+
+            let dateSortIcon = document.createElement('i');
+            dateSortIcon.classList.add('material-icons', 'right', 'date-icon');
+            dateSortIcon.textContent = "keyboard_arrow_down";
+            dateSort.appendChild(dateSortIcon);
+
+            sortBar.appendChild(clearComplete);
+            sortBar.appendChild(alphaSort);
+            sortBar.appendChild(dateSort);
+            taskArea.insertBefore(sortBar, taskArea.childNodes[2]);
+        }
     }
 
     //updates project modal window to reflect editing mode
@@ -402,6 +440,10 @@ const DOMController = (() => {
             if (document.getElementById('addTaskBtn')) {
                 document.getElementById('addTaskBtn').outerHTML = '';
             }
+
+            if(document.getElementById('sort-bar')) {
+                document.getElementById('sort-bar').outerHTML = '';
+            }
             //if to-be-deleted project is the current active project,
             //update the current project to first in the list and display
         } else if (logicController.getCurrentProjectIndex() == projectIndex) {
@@ -464,7 +506,6 @@ const DOMController = (() => {
             var modalInstance = M.Modal.getInstance(document.getElementById('add-task-modal'));
             modalInstance.close();
             renderTasks();
-            datePicker.value = '';
         }
     }
 
@@ -581,8 +622,11 @@ const DOMController = (() => {
     const setTutorialProject = () => {
         logicController.addProject('Example Project');
         logicController.setCurrentProject(0);
-        logicController.addTask(0, 'Example Task: Click me!', 'Use the edit and delete buttons to update your tasks', false, 'Mar 20, 2021');
-
+        logicController.addTask(0, 'Dump', 'Use the edit and delete buttons to update your tasks', false, 'Mar 26, 2021');
+        logicController.addTask(0, 'ECoom', 'Use the edit and delete buttons to update your tasks', false, 'Mar 25, 2021');
+        logicController.addTask(0, 'Jumanji', 'Use the edit and delete buttons to update your tasks', false, 'Jan 20, 2022');
+        logicController.addTask(0, 'Example Task: Click me!', 'Use the edit and delete buttons to update your tasks', false, 'Feb 13, 2020');
+        logicController.addTask(0, 'Scoob', 'Use the edit and delete buttons to update your tasks', false, 'May 16, 2025');
     }
 
     const materializeCollapsible = () => {
@@ -621,6 +665,21 @@ const DOMController = (() => {
             });
           });
     }
+
+    const sortByDate = () => {
+        let dateSortIcon = document.querySelector('.date-icon')
+        if (dateSortIcon.textContent == 'keyboard_arrow_down') {
+            logicController.sortTasksRecentLast();
+            renderTasks();
+            dateSortIcon.textContent = 'keyboard_arrow_up';
+        } else {
+            logicController.sortTasksRecentFirst();
+            renderTasks();
+            dateSortIcon.textContent= 'keyboard_arrow_down';
+        }
+    }
+    
+
     
     const renderDOM = () => {
         setTutorialProject();

@@ -78,23 +78,44 @@ html, body {
 
 
 
-#taskArea {
+#taskArea, #sort-bar {
     margin: 1vh auto;
     width: 60vw;
 }
 
 @media only screen and (max-width: 995px) {
-    #taskArea {
+    #taskArea, #sort-bar {
         width: 75vw;
     }
 }
 
 @media only screen and (max-width: 560px) {
-    #taskArea {
+    #taskArea, #sort-bar {
         width: 85vw;
     }
 }
 
+#sort-bar {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.2rem;
+    
+}
+
+.sort-button {
+    text-align: center;
+    width: 12rem;
+    cursor: pointer;
+}
+
+#date-sort > i {
+    pointer-events: none;
+  }
+
+.date-icon {
+    margin-right: 3rem;
+    
+}
 
 #task-list-wrapper {
     

@@ -1,3 +1,5 @@
+import { parse } from 'date-fns';
+
 const logicController = (() => {
 
     let currentProject = null;
@@ -82,6 +84,34 @@ const logicController = (() => {
         }
     }
 
+    const sortTasksRecentFirst = () => {
+        let projIndex = getCurrentProjectIndex();
+
+        if (projects[projIndex].tasks.length > 1) {
+            projects[projIndex].tasks = projects[projIndex].tasks.sort((a,b) => {
+                let aDate = parse(a.dueDate.replace(/,/g, ''), 'MMM d yyyy', new Date());
+                let bDate = parse(b.dueDate.replace(/,/g, ''), 'MMM d yyyy', new Date());
+                return aDate.valueOf() - bDate.valueOf();
+                
+            })
+        }
+    }
+
+    const sortTasksRecentLast = () => {
+        let projIndex = getCurrentProjectIndex();
+
+        if (projects[projIndex].tasks.length > 1) {
+            projects[projIndex].tasks = projects[projIndex].tasks.sort((a,b) => {
+                let aDate = parse(a.dueDate.replace(/,/g, ''), 'MMM d yyyy', new Date());
+                let bDate = parse(b.dueDate.replace(/,/g, ''), 'MMM d yyyy', new Date());
+                return bDate.valueOf() - aDate.valueOf();
+                
+            })
+        }
+    }
+
+
+
     return {
         projects,
         setCurrentProject,
@@ -99,6 +129,8 @@ const logicController = (() => {
         editTaskNotes,
         editTaskDueDate,
         toggleComplete,
+        sortTasksRecentFirst,
+        sortTasksRecentLast
     }
 
 })();
