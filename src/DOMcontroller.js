@@ -139,7 +139,6 @@ const DOMController = (() => {
             checkBoxWrapper.classList.add('check-box-wrapper');
             let checkBox = document.createElement('input');
             checkBox.type = 'checkbox';
-            checkBox.classList.add('orange', 'darken-2');
             let checkBoxText = document.createElement('span');
             checkBoxText.textContent = 'Complete?';
             checkBoxWrapper.appendChild(checkBox);
@@ -153,6 +152,7 @@ const DOMController = (() => {
             } else {
                 dueDate.textContent = "Due Date: None";
             }
+            console.log(logicController.projects[projectIndex].tasks[i].isComplete);
             
 
             //logic to control display of already completed tasks
@@ -204,9 +204,13 @@ const DOMController = (() => {
                 setCurrentTaskOnClick(e);
             });
             checkBox.addEventListener('click', (e) => {
-                    toggleTaskComplete(e);
-                    checkBoxLabelComplete(e);
+                toggleTaskComplete(e);
+                checkBoxLabelComplete(e);
             });
+            checkBoxWrapper.addEventListener('click', (e) => {
+                //prevent collapsible event from triggering
+                e.stopPropagation();
+            })
             dltBtn.addEventListener('click', deleteTaskModalOpen);
             edtBtn.addEventListener('click', editTaskModalOpen);
 
@@ -286,17 +290,22 @@ const DOMController = (() => {
             let sortBar = document.createElement('div');
             sortBar.setAttribute('id', 'sort-bar');
 
-            let clearComplete = document.createElement('div');
+            let clearComplete = document.createElement('a');
+            clearComplete.href = '#complete-modal';
             clearComplete.setAttribute('id', 'clear-complete');
-            clearComplete.classList.add('sort-button');
-            clearComplete.textContent = 'Clear Complete';
+            clearComplete.classList.add('sort-button', 'modal-trigger');
+            clearComplete.textContent = 'Clear Completed';
+            clearComplete.href = '#complete-modal';
+            
+            
 
-            let alphaSort = document.createElement('div');
+            let alphaSort = document.createElement('a');
             alphaSort.setAttribute('id', 'alpha-sort');
             alphaSort.classList.add('sort-button');
             alphaSort.textContent = "A-Z";
+            alphaSort.addEventListener('click', sortAtoZ);
 
-            let dateSort = document.createElement('div');
+            let dateSort = document.createElement('a');
             dateSort.setAttribute('id', 'date-sort');
             dateSort.classList.add('sort-button');
             dateSort.textContent = "Date";
@@ -397,11 +406,17 @@ const DOMController = (() => {
         }
     }
 
-    //add event listener for closure of modal window if no deletion desired
+    //add event listener for closure of modal window if no deletion desired for clear complete and normal delete
     const cancelDeleteEventListener = () => {
-        let cancelButton = document.getElementById('cancel-modal-btn');
-        cancelButton.addEventListener('click', () => {
+        let cancelDelButton = document.getElementById('cancel-delete-btn');
+        cancelDelButton.addEventListener('click', () => {
             let modalInstance = M.Modal.getInstance(document.getElementById('delete-modal'));
+            modalInstance.close();
+        })
+
+        let cancelClearButton = document.getElementById('cancel-clear-btn');
+        cancelClearButton.addEventListener('click', () => {
+            let modalInstance = M.Modal.getInstance(document.getElementById('complete-modal'));
             modalInstance.close();
         })
     }
@@ -595,6 +610,7 @@ const DOMController = (() => {
 
     //controls toggling of task completion checkbox
     const toggleTaskComplete = (e) => {
+        
         let projectIndex = logicController.getCurrentProjectIndex();
         let taskIndex = e.target.getAttribute('data-taskNum');
         logicController.toggleComplete(projectIndex, taskIndex);
@@ -609,8 +625,50 @@ const DOMController = (() => {
             checkBoxLabel.textContent = 'Complete!';
         } else {
             checkBoxLabel.textContent = "Complete?";
+        } 
+    }
+
+    const sortByDate = () => {
+        let dateSortIcon = document.querySelector('.date-icon')
+        if (dateSortIcon.textContent == 'keyboard_arrow_down') {
+            logicController.sortTasksRecentLast();
+            renderTasks();
+            dateSortIcon.textContent = 'keyboard_arrow_up';
+        } else {
+            logicController.sortTasksRecentFirst();
+            renderTasks();
+            dateSortIcon.textContent= 'keyboard_arrow_down';
         }
     }
+
+    const sortAtoZ = () => {
+        let alphaSortButton = document.getElementById('alpha-sort');
+        if (alphaSortButton.textContent == 'A-Z') {
+            alphaSortButton.textContent = 'Z-A';
+            logicController.sortTasksZtoA();
+            renderTasks();
+        } else {
+            alphaSortButton.textContent = 'A-Z';
+            logicController.sortTasksAtoZ();
+            renderTasks();
+        }
+        
+    }
+
+
+    const clearCompleteEventListener = () => {
+        let clearBtn = document.getElementById('clear-modal-btn');
+        clearBtn.addEventListener('click', () => {
+            logicController.clearCompleteTasks();
+            renderTasks();
+            let modalInstance = M.Modal.getInstance(document.getElementById('complete-modal'));
+            modalInstance.close();
+        })
+    }
+
+
+
+
 
     const clearDisplay = (parent) => {
         while (parent.firstChild) {
@@ -666,18 +724,7 @@ const DOMController = (() => {
           });
     }
 
-    const sortByDate = () => {
-        let dateSortIcon = document.querySelector('.date-icon')
-        if (dateSortIcon.textContent == 'keyboard_arrow_down') {
-            logicController.sortTasksRecentLast();
-            renderTasks();
-            dateSortIcon.textContent = 'keyboard_arrow_up';
-        } else {
-            logicController.sortTasksRecentFirst();
-            renderTasks();
-            dateSortIcon.textContent= 'keyboard_arrow_down';
-        }
-    }
+  
     
 
     
@@ -696,6 +743,7 @@ const DOMController = (() => {
         materializeSideNav();  
         materializeCharacterCount();
         materializeDatePicker();
+        clearCompleteEventListener();
     }
 
 

@@ -110,6 +110,40 @@ const logicController = (() => {
         }
     }
 
+    const sortTasksAtoZ = () => {
+        let projIndex = getCurrentProjectIndex();
+        
+        if (projects[projIndex].tasks.length > 1) {
+            projects[projIndex].tasks = projects[projIndex].tasks.sort((a,b) => {
+                let taskA = a.title.toLowerCase();
+                let taskB = b.title.toLowerCase();
+                return (taskA < taskB) ? -1 : (taskA > taskB) ? 1 : 0;
+            })
+        }
+    }
+
+    const sortTasksZtoA = () => {
+        let projIndex = getCurrentProjectIndex();
+        if (projects[projIndex].tasks.length > 1) {
+            projects[projIndex].tasks = projects[projIndex].tasks.sort((a,b) => {
+                let taskA = a.title.toLowerCase();
+                let taskB = b.title.toLowerCase();
+                return (taskA > taskB) ? -1 : (taskA < taskB) ? 1 : 0;
+            })
+        }
+    }
+
+    const clearCompleteTasks = () => {
+        let projIndex = getCurrentProjectIndex();
+        //loop backward to avoid indexing bugs / skipping tasks to be deleted
+        for (let i = projects[projIndex].tasks.length - 1; i >= 0; i--) {
+            if (projects[projIndex].tasks[i].isComplete) {
+                projects[projIndex].tasks.splice(i, 1);
+            }
+        }
+    }
+    
+
 
 
     return {
@@ -130,7 +164,10 @@ const logicController = (() => {
         editTaskDueDate,
         toggleComplete,
         sortTasksRecentFirst,
-        sortTasksRecentLast
+        sortTasksRecentLast,
+        sortTasksAtoZ,
+        sortTasksZtoA,
+        clearCompleteTasks
     }
 
 })();
