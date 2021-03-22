@@ -26,6 +26,7 @@ html, body {
     height: 100%;
     width: 35vw;
     max-width: 350px;
+    overflow-y: scroll;
 }
 
 #add-project-modal-open-btn {
@@ -72,12 +73,6 @@ html, body {
 }
 
 
-
-
-
-
-
-
 #taskArea, #sort-bar {
     margin: 1vh auto;
     width: 60vw;
@@ -106,22 +101,15 @@ html, body {
     text-align: center;
     width: 12rem;
     cursor: pointer;
+    color: black;
 }
 
-#date-sort > i {
-    pointer-events: none;
-  }
 
 .date-icon {
     margin-right: 3rem;
     
 }
 
-#task-list-wrapper {
-    
-    display: block;
-    
-}
 
 #addTaskBtn {
     margin-top: 1vh;
@@ -161,7 +149,10 @@ html, body {
 .check-box-wrapper {
     width: 12rem;
     text-align: center;;
+    
 }
+
+
 
 .due-date {
     width: 12rem;
