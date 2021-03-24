@@ -21,7 +21,7 @@ html, body {
 }
 
 
-#projectArea {
+#project-area {
     margin: 0;
     height: 100%;
     width: 35vw;
@@ -39,7 +39,7 @@ html, body {
     margin-left: 2vw;
 }
 
-#projectList {
+#project-list {
     display: grid;
     grid-template-columns: 1fr 0.3fr 0.3fr;
     font-size: 1.5rem;
@@ -73,19 +73,19 @@ html, body {
 }
 
 
-#taskArea, #sort-bar {
+#task-area, #sort-bar {
     margin: 1vh auto;
     width: 60vw;
 }
 
 @media only screen and (max-width: 995px) {
-    #taskArea, #sort-bar {
+    #task-area, #sort-bar {
         width: 75vw;
     }
 }
 
 @media only screen and (max-width: 560px) {
-    #taskArea, #sort-bar {
+    #task-area, #sort-bar {
         width: 85vw;
     }
 }
@@ -107,19 +107,18 @@ html, body {
 
 .date-icon {
     margin-right: 3rem;
-    
 }
 
 
-#addTaskBtn {
+#add-task-btn {
     margin-top: 1vh;
 }
 
-#taskList {
+#task-list {
     margin: 0 auto;
 }
 
-#projTitle {
+#proj-title {
     text-align: center;
     font-size: 2rem;
 }
@@ -145,14 +144,11 @@ html, body {
 }
 
 
-
 .check-box-wrapper {
     width: 12rem;
     text-align: center;;
     
 }
-
-
 
 .due-date {
     width: 12rem;

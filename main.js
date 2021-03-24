@@ -16161,7 +16161,7 @@ const DOMController = (() => {
     //render projects, edit, and delete buttons for projects
     const renderProjectArea = () => {
         //grab div containing list of projects
-        let projList = document.getElementById('projectList');
+        let projList = document.getElementById('project-list');
         //clear display before repopulating
         let sideNav = document.getElementById('sidenav-project-wrapper');
         clearDisplay(sideNav);
@@ -16237,7 +16237,7 @@ const DOMController = (() => {
             projectTitles[i].addEventListener('click', (e) => {
                 setCurrentProjectOnClick(e);
                 displayCurrentProjectTitle();
-                renderTasks(e);
+                renderTaskArea(e);
                 renderAddTaskBtn();
             })
         } 
@@ -16259,13 +16259,15 @@ const DOMController = (() => {
     }
  
     //render task area in materialize collapsible format
-    const renderTasks = () => {
+    const renderTaskArea = () => {
         //grab tasklist div
-        let taskList = document.querySelector('#taskList');
+        let taskList = document.querySelector('#task-list');
         //grab index of project 
         let projectIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
         //clear previous task list before rendering new one
         clearDisplay(taskList);
+
+        
         
         //render current task titles (shown) and task details (hidden)
         let allTasks = document.createDocumentFragment();
@@ -16389,7 +16391,7 @@ const DOMController = (() => {
             
     //display title of project above task list
     const displayCurrentProjectTitle = () => {
-         let projTitleDisplay = document.querySelector('#projTitle');
+         let projTitleDisplay = document.querySelector('#proj-title');
          let currentProjIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
          projTitleDisplay.textContent = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects[currentProjIndex].title;
     }
@@ -16408,7 +16410,7 @@ const DOMController = (() => {
 
     //creates the button for adding tasks
     const renderAddTaskBtn = () => {
-        if (document.querySelector('#addTaskBtn')) {
+        if (document.querySelector('#add-task-btn')) {
             return
         } else {
             let taskWrapper = document.querySelector('.task-list-wrapper');
@@ -16420,7 +16422,7 @@ const DOMController = (() => {
 
             addTaskBtn.classList.add('waves-effect', 'waves-light', 'btn', 'modal-trigger');
             addTaskBtn.textContent = 'Add Task';
-            addTaskBtn.setAttribute('id', 'addTaskBtn');
+            addTaskBtn.setAttribute('id', 'add-task-btn');
 
             addTaskBtn.appendChild(addTaskIcon);
             addTaskBtn.href = '#add-task-modal';
@@ -16434,7 +16436,7 @@ const DOMController = (() => {
             return
         } else {
 
-            let taskArea = document.getElementById('taskArea');
+            let taskArea = document.getElementById('task-area');
 
             let sortBar = document.createElement('div');
             sortBar.setAttribute('id', 'sort-bar');
@@ -16510,6 +16512,7 @@ const DOMController = (() => {
                 renderProjectArea(); 
                 modalInstance.close();
                 document.querySelector("#proj-title-input").value = ''; //empty text input
+                updateStorage();
             }
     }
 
@@ -16552,6 +16555,7 @@ const DOMController = (() => {
             renderProjectArea(); 
             modalInstance.close();
             document.querySelector("#proj-title-input").value = ''; //empty text input
+            updateStorage();
         }
     }
 
@@ -16591,8 +16595,8 @@ const DOMController = (() => {
         //grab div for proper removal of DOM elements as projects are deleted
         let projectIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
         let numberOfProjects = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects.length;
-        let taskList = document.querySelector('#taskList');
-        let projTitleDisplay = document.querySelector('#projTitle');
+        let taskList = document.querySelector('#task-list');
+        let projTitleDisplay = document.querySelector('#proj-title');
         let modalInstance = M.Modal.getInstance(document.getElementById('delete-modal'));
 
         //reset task list if no projects remain after deleting last one
@@ -16601,8 +16605,8 @@ const DOMController = (() => {
             renderProjectArea();
             clearDisplay(taskList);
             projTitleDisplay.textContent = "Project Title";
-            if (document.getElementById('addTaskBtn')) {
-                document.getElementById('addTaskBtn').outerHTML = '';
+            if (document.getElementById('add-task-btn')) {
+                document.getElementById('add-task-btn').outerHTML = '';
             }
 
             if(document.getElementById('sort-bar')) {
@@ -16615,12 +16619,13 @@ const DOMController = (() => {
             _logicController__WEBPACK_IMPORTED_MODULE_0__.default.setCurrentProject(0);
             renderProjectArea();
             displayCurrentProjectTitle();
-            renderTasks();
+            renderTaskArea();
         } else {
             _logicController__WEBPACK_IMPORTED_MODULE_0__.default.deleteProject(projectIndex);
             renderProjectArea();
         }
         modalInstance.close();
+        updateStorage();
     }
 
 
@@ -16669,7 +16674,8 @@ const DOMController = (() => {
             _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(_logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex(), taskTitleInput, taskNotesInput, false, taskDueDate);
             var modalInstance = M.Modal.getInstance(document.getElementById('add-task-modal'));
             modalInstance.close();
-            renderTasks();
+            renderTaskArea();
+            updateStorage();
         }
     }
 
@@ -16697,8 +16703,9 @@ const DOMController = (() => {
         let taskIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentTaskIndex();
         let modalInstance = M.Modal.getInstance(document.getElementById('delete-modal'));
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.deleteTask(projectIndex, taskIndex);
-        renderTasks();
+        renderTaskArea();
         modalInstance.close();
+        updateStorage();
     }
 
     //edits task and redners result to DOM
@@ -16718,7 +16725,8 @@ const DOMController = (() => {
             _logicController__WEBPACK_IMPORTED_MODULE_0__.default.editTaskDueDate(projectIndex, taskIndex, editedDueDate);
             var modalInstance = M.Modal.getInstance(document.getElementById('add-task-modal'));
             modalInstance.close();
-            renderTasks();
+            renderTaskArea();
+            updateStorage();
         }
     }
     
@@ -16759,10 +16767,10 @@ const DOMController = (() => {
 
     //controls toggling of task completion checkbox
     const toggleTaskComplete = (e) => {
-        
         let projectIndex = _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getCurrentProjectIndex();
         let taskIndex = e.target.getAttribute('data-taskNum');
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.toggleComplete(projectIndex, taskIndex);
+        updateStorage();
     }
 
     //updates checkbox label to reflect completion
@@ -16781,11 +16789,11 @@ const DOMController = (() => {
         let dateSortIcon = document.querySelector('.date-icon')
         if (dateSortIcon.textContent == 'keyboard_arrow_down') {
             _logicController__WEBPACK_IMPORTED_MODULE_0__.default.sortTasksRecentLast();
-            renderTasks();
+            renderTaskArea();
             dateSortIcon.textContent = 'keyboard_arrow_up';
         } else {
             _logicController__WEBPACK_IMPORTED_MODULE_0__.default.sortTasksRecentFirst();
-            renderTasks();
+            renderTaskArea();
             dateSortIcon.textContent= 'keyboard_arrow_down';
         }
     }
@@ -16795,13 +16803,12 @@ const DOMController = (() => {
         if (alphaSortButton.textContent == 'A-Z') {
             alphaSortButton.textContent = 'Z-A';
             _logicController__WEBPACK_IMPORTED_MODULE_0__.default.sortTasksZtoA();
-            renderTasks();
+            renderTaskArea();
         } else {
             alphaSortButton.textContent = 'A-Z';
             _logicController__WEBPACK_IMPORTED_MODULE_0__.default.sortTasksAtoZ();
-            renderTasks();
+            renderTaskArea();
         }
-        
     }
 
 
@@ -16809,7 +16816,7 @@ const DOMController = (() => {
         let clearBtn = document.getElementById('clear-modal-btn');
         clearBtn.addEventListener('click', () => {
             _logicController__WEBPACK_IMPORTED_MODULE_0__.default.clearCompleteTasks();
-            renderTasks();
+            renderTaskArea();
             let modalInstance = M.Modal.getInstance(document.getElementById('complete-modal'));
             modalInstance.close();
         })
@@ -16829,11 +16836,12 @@ const DOMController = (() => {
     const setTutorialProject = () => {
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addProject('Example Project');
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.setCurrentProject(0);
+        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(0, 'Example Task: Click me!', 'Use the edit and delete buttons to update your tasks', false, 'Feb 13, 2020');
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(0, 'Dump', 'Use the edit and delete buttons to update your tasks', false, 'Mar 26, 2021');
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(0, 'ECoom', 'Use the edit and delete buttons to update your tasks', false, 'Mar 25, 2021');
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(0, 'Jumanji', 'Use the edit and delete buttons to update your tasks', false, 'Jan 20, 2022');
-        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(0, 'Example Task: Click me!', 'Use the edit and delete buttons to update your tasks', false, 'Feb 13, 2020');
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(0, 'Scoob', 'Use the edit and delete buttons to update your tasks', false, 'May 16, 2025');
+        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addProject('test 2');
     }
 
     const materializeCollapsible = () => {
@@ -16873,14 +16881,80 @@ const DOMController = (() => {
           });
     }
 
+    const updateStorage = () => {
+        if (_logicController__WEBPACK_IMPORTED_MODULE_0__.default.storageIsLocal) {
+            _logicController__WEBPACK_IMPORTED_MODULE_0__.default.populateStorage();
+        }
+    }
+
+    const checkForStoredProjects = () => {
+        if (!localStorage.getItem('toDoProjects')) {
+            setTutorialProject();
+            _logicController__WEBPACK_IMPORTED_MODULE_0__.default.populateStorage();
+        } else {
+            _logicController__WEBPACK_IMPORTED_MODULE_0__.default.getProjectsFromLocalStorage();
+            _logicController__WEBPACK_IMPORTED_MODULE_0__.default.setCurrentProject(0);
+        }
+    }
+
+    const checkLocalStoreCapability = () => {
+        if (_logicController__WEBPACK_IMPORTED_MODULE_0__.default.storageAvailable('localStorage')) {
+            _logicController__WEBPACK_IMPORTED_MODULE_0__.default.storageIsLocal = true;
+            console.log(_logicController__WEBPACK_IMPORTED_MODULE_0__.default.storageIsLocal);
+            checkForStoredProjects();
+            console.log(_logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects);
+            console.log(JSON.parse(localStorage.getItem('toDoProjects')));
+            renderDOM();
+            var elem = M.Modal.getInstance(document.getElementById('storage-modal'))
+            elem.close();
+        } else {
+            M.toast({html: 'Sorry, no local storage capability.'});
+        }
+    }
   
-    
+    const storageModal = () => {
+        document.addEventListener('DOMContentLoaded', function() {
+            var elem = document.getElementById('storage-modal');
+            var instance = M.Modal.init(elem, {
+                dismissible: false
+            })
+            instance.open()
+        })
+    }
+
+    const localStorageEventListener = () => {
+        let localStorageButton = document.getElementById('local-storage-btn');
+        localStorageButton.addEventListener('click', checkLocalStoreCapability);
+    }
+
+
+    const initialLoad = () => {
+        materializeCollapsible(); 
+        materializeModal(); 
+        materializeSideNav();  
+        materializeCharacterCount();
+        materializeDatePicker();
+        storageModal();
+        localStorageEventListener();
+    }
 
     
     const renderDOM = () => {
+        renderProjectArea();
+        renderTaskArea();
+        renderAddTaskBtn();
+        displayCurrentProjectTitle();
+        addNewProjectEventListener();
+        addProjectModalEventListener();
+        addNewTaskEventListener();
+        cancelDeleteEventListener();
+        clearCompleteEventListener();
+    }
+
+    const renderNormal = () => {
         setTutorialProject();
         renderProjectArea();
-        renderTasks();
+        renderTaskArea();
         renderAddTaskBtn();
         displayCurrentProjectTitle();
         addNewProjectEventListener();
@@ -16899,7 +16973,9 @@ const DOMController = (() => {
     
 
     return {
-        renderDOM
+        initialLoad,
+        renderDOM,
+        renderNormal
     }
 
 })();
@@ -16923,10 +16999,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _logicController__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./logicController */ "./src/logicController.js");
 
 
+//localStorage.clear();
+_DOMcontroller__WEBPACK_IMPORTED_MODULE_0__.default.initialLoad();
 
-
-
-_DOMcontroller__WEBPACK_IMPORTED_MODULE_0__.default.renderDOM();
+//DOMController.renderNormal();
 
 /***/ }),
 
@@ -16949,6 +17025,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const logicController = (() => {
+
+    let storageIsLocal = false;
 
     let currentProject = null;
     let currentTask = null;
@@ -17090,12 +17168,57 @@ const logicController = (() => {
             }
         }
     }
+
+    const storageAvailable = (type) => {
+        var storage;
+        try {
+            storage = window[type];
+            var x = '__storage_test__';
+            storage.setItem(x, x);
+            storage.removeItem(x);
+            return true;
+        }
+        catch(e) {
+            return e instanceof DOMException && (
+                // everything except Firefox
+                e.code === 22 ||
+                // Firefox
+                e.code === 1014 ||
+                // test name field too, because code might not be present
+                // everything except Firefox
+                e.name === 'QuotaExceededError' ||
+                // Firefox
+                e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+                // acknowledge QuotaExceededError only if there's something already stored
+                (storage && storage.length !== 0);
+        }
+    }
+
+    
+
+    const populateStorage = () => {
+        localStorage.setItem('toDoProjects', JSON.stringify(projects));
+    }
+
+    const getProjectsFromLocalStorage = () => {
+        let retrievedProjects = JSON.parse(localStorage.getItem('toDoProjects'));
+        retrievedProjects.forEach((project) => {
+            projects.push(project);
+        })
+    }
+
+   
+
+    const storeProjectsIfChanged = () => {
+
+    }
     
 
 
 
     return {
         projects,
+        storageIsLocal,
         setCurrentProject,
         getCurrentProjectIndex,
         getCurrentProjectTitle,
@@ -17115,7 +17238,10 @@ const logicController = (() => {
         sortTasksRecentLast,
         sortTasksAtoZ,
         sortTasksZtoA,
-        clearCompleteTasks
+        clearCompleteTasks,
+        storageAvailable,
+        populateStorage,
+        getProjectsFromLocalStorage
     }
 
 })();
