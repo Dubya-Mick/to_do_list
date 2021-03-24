@@ -29,10 +29,10 @@
    </ul>
     
  
-   <div id="to-do-main" class="">
-      <div id="projectArea" class="col s3 hide-on-med-and-down z-depth-2">
-         <div id="projectList" class="row"></div>
-         <div class="addProjWrapper">
+   <div id="to-do-main">
+      <div id="project-area" class="col s3 hide-on-med-and-down z-depth-2">
+         <div id="project-list" class="row"></div>
+         <div>
 
             <!-- Add Project Button to Open Modal -->
             <a id="add-project-modal-open-btn" class="waves-effect waves-light btn modal-trigger" href="#add-proj-modal"><i class="material-icons left">add</i>Add Project</a>
@@ -45,11 +45,11 @@
       
 
 
-      <div id="taskArea" class="col s9">
-        <div id ="projTitle">Task Area</div>
+      <div id="task-area" class="col s9">
+        <div id="proj-title">Task Area</div>
         
          <div class="task-list-wrapper">
-            <ul id="taskList" class="collapsible"></ul>
+            <ul id="task-list" class="collapsible"></ul>
          </div>
       </div>
 
@@ -132,7 +132,21 @@
           </div>
       </div>
     </div>
-    <!-- End Delete Modal -->
+    <!-- End Clear Complete Modal -->
+
+
+    <!-- Begin Storage Modal -->
+    <div id="storage-modal" class="modal">
+      <div class="modal-content">
+        <h4 class="center-align" id="storage-modal-header">How would you like to store your ToDo List?</h4>
+          <div class="center-align">
+            <a href="#!" class="waves-effect waves-green btn" id="local-storage-btn">On Your Computer</a> 
+            <a href="#!" class="waves-effect waves-green btn" id="cloud-storage-btn">In the Cloud</a>
+            <a href="#!" class="waves-effect waves-green btn" id="no-storage-btn">None: Just a Demo</a>
+          </div>
+      </div>
+    </div>
+    <!-- End Storage Modal -->
 
   
 

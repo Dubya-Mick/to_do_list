@@ -12,7 +12,7 @@ const DOMController = (() => {
     //render projects, edit, and delete buttons for projects
     const renderProjectArea = () => {
         //grab div containing list of projects
-        let projList = document.getElementById('projectList');
+        let projList = document.getElementById('project-list');
         //clear display before repopulating
         let sideNav = document.getElementById('sidenav-project-wrapper');
         clearDisplay(sideNav);
@@ -88,7 +88,7 @@ const DOMController = (() => {
             projectTitles[i].addEventListener('click', (e) => {
                 setCurrentProjectOnClick(e);
                 displayCurrentProjectTitle();
-                renderTasks(e);
+                renderTaskArea(e);
                 renderAddTaskBtn();
             })
         } 
@@ -110,13 +110,15 @@ const DOMController = (() => {
     }
  
     //render task area in materialize collapsible format
-    const renderTasks = () => {
+    const renderTaskArea = () => {
         //grab tasklist div
-        let taskList = document.querySelector('#taskList');
+        let taskList = document.querySelector('#task-list');
         //grab index of project 
         let projectIndex = logicController.getCurrentProjectIndex();
         //clear previous task list before rendering new one
         clearDisplay(taskList);
+
+        
         
         //render current task titles (shown) and task details (hidden)
         let allTasks = document.createDocumentFragment();
@@ -240,7 +242,7 @@ const DOMController = (() => {
             
     //display title of project above task list
     const displayCurrentProjectTitle = () => {
-         let projTitleDisplay = document.querySelector('#projTitle');
+         let projTitleDisplay = document.querySelector('#proj-title');
          let currentProjIndex = logicController.getCurrentProjectIndex();
          projTitleDisplay.textContent = logicController.projects[currentProjIndex].title;
     }
@@ -259,7 +261,7 @@ const DOMController = (() => {
 
     //creates the button for adding tasks
     const renderAddTaskBtn = () => {
-        if (document.querySelector('#addTaskBtn')) {
+        if (document.querySelector('#add-task-btn')) {
             return
         } else {
             let taskWrapper = document.querySelector('.task-list-wrapper');
@@ -271,7 +273,7 @@ const DOMController = (() => {
 
             addTaskBtn.classList.add('waves-effect', 'waves-light', 'btn', 'modal-trigger');
             addTaskBtn.textContent = 'Add Task';
-            addTaskBtn.setAttribute('id', 'addTaskBtn');
+            addTaskBtn.setAttribute('id', 'add-task-btn');
 
             addTaskBtn.appendChild(addTaskIcon);
             addTaskBtn.href = '#add-task-modal';
@@ -285,7 +287,7 @@ const DOMController = (() => {
             return
         } else {
 
-            let taskArea = document.getElementById('taskArea');
+            let taskArea = document.getElementById('task-area');
 
             let sortBar = document.createElement('div');
             sortBar.setAttribute('id', 'sort-bar');
@@ -361,6 +363,7 @@ const DOMController = (() => {
                 renderProjectArea(); 
                 modalInstance.close();
                 document.querySelector("#proj-title-input").value = ''; //empty text input
+                updateStorage();
             }
     }
 
@@ -403,6 +406,7 @@ const DOMController = (() => {
             renderProjectArea(); 
             modalInstance.close();
             document.querySelector("#proj-title-input").value = ''; //empty text input
+            updateStorage();
         }
     }
 
@@ -442,8 +446,8 @@ const DOMController = (() => {
         //grab div for proper removal of DOM elements as projects are deleted
         let projectIndex = logicController.getCurrentProjectIndex();
         let numberOfProjects = logicController.projects.length;
-        let taskList = document.querySelector('#taskList');
-        let projTitleDisplay = document.querySelector('#projTitle');
+        let taskList = document.querySelector('#task-list');
+        let projTitleDisplay = document.querySelector('#proj-title');
         let modalInstance = M.Modal.getInstance(document.getElementById('delete-modal'));
 
         //reset task list if no projects remain after deleting last one
@@ -452,8 +456,8 @@ const DOMController = (() => {
             renderProjectArea();
             clearDisplay(taskList);
             projTitleDisplay.textContent = "Project Title";
-            if (document.getElementById('addTaskBtn')) {
-                document.getElementById('addTaskBtn').outerHTML = '';
+            if (document.getElementById('add-task-btn')) {
+                document.getElementById('add-task-btn').outerHTML = '';
             }
 
             if(document.getElementById('sort-bar')) {
@@ -466,12 +470,13 @@ const DOMController = (() => {
             logicController.setCurrentProject(0);
             renderProjectArea();
             displayCurrentProjectTitle();
-            renderTasks();
+            renderTaskArea();
         } else {
             logicController.deleteProject(projectIndex);
             renderProjectArea();
         }
         modalInstance.close();
+        updateStorage();
     }
 
 
@@ -520,7 +525,8 @@ const DOMController = (() => {
             logicController.addTask(logicController.getCurrentProjectIndex(), taskTitleInput, taskNotesInput, false, taskDueDate);
             var modalInstance = M.Modal.getInstance(document.getElementById('add-task-modal'));
             modalInstance.close();
-            renderTasks();
+            renderTaskArea();
+            updateStorage();
         }
     }
 
@@ -548,8 +554,9 @@ const DOMController = (() => {
         let taskIndex = logicController.getCurrentTaskIndex();
         let modalInstance = M.Modal.getInstance(document.getElementById('delete-modal'));
         logicController.deleteTask(projectIndex, taskIndex);
-        renderTasks();
+        renderTaskArea();
         modalInstance.close();
+        updateStorage();
     }
 
     //edits task and redners result to DOM
@@ -569,7 +576,8 @@ const DOMController = (() => {
             logicController.editTaskDueDate(projectIndex, taskIndex, editedDueDate);
             var modalInstance = M.Modal.getInstance(document.getElementById('add-task-modal'));
             modalInstance.close();
-            renderTasks();
+            renderTaskArea();
+            updateStorage();
         }
     }
     
@@ -610,10 +618,10 @@ const DOMController = (() => {
 
     //controls toggling of task completion checkbox
     const toggleTaskComplete = (e) => {
-        
         let projectIndex = logicController.getCurrentProjectIndex();
         let taskIndex = e.target.getAttribute('data-taskNum');
         logicController.toggleComplete(projectIndex, taskIndex);
+        updateStorage();
     }
 
     //updates checkbox label to reflect completion
@@ -632,11 +640,11 @@ const DOMController = (() => {
         let dateSortIcon = document.querySelector('.date-icon')
         if (dateSortIcon.textContent == 'keyboard_arrow_down') {
             logicController.sortTasksRecentLast();
-            renderTasks();
+            renderTaskArea();
             dateSortIcon.textContent = 'keyboard_arrow_up';
         } else {
             logicController.sortTasksRecentFirst();
-            renderTasks();
+            renderTaskArea();
             dateSortIcon.textContent= 'keyboard_arrow_down';
         }
     }
@@ -646,13 +654,12 @@ const DOMController = (() => {
         if (alphaSortButton.textContent == 'A-Z') {
             alphaSortButton.textContent = 'Z-A';
             logicController.sortTasksZtoA();
-            renderTasks();
+            renderTaskArea();
         } else {
             alphaSortButton.textContent = 'A-Z';
             logicController.sortTasksAtoZ();
-            renderTasks();
+            renderTaskArea();
         }
-        
     }
 
 
@@ -660,7 +667,7 @@ const DOMController = (() => {
         let clearBtn = document.getElementById('clear-modal-btn');
         clearBtn.addEventListener('click', () => {
             logicController.clearCompleteTasks();
-            renderTasks();
+            renderTaskArea();
             let modalInstance = M.Modal.getInstance(document.getElementById('complete-modal'));
             modalInstance.close();
         })
@@ -680,11 +687,12 @@ const DOMController = (() => {
     const setTutorialProject = () => {
         logicController.addProject('Example Project');
         logicController.setCurrentProject(0);
+        logicController.addTask(0, 'Example Task: Click me!', 'Use the edit and delete buttons to update your tasks', false, 'Feb 13, 2020');
         logicController.addTask(0, 'Dump', 'Use the edit and delete buttons to update your tasks', false, 'Mar 26, 2021');
         logicController.addTask(0, 'ECoom', 'Use the edit and delete buttons to update your tasks', false, 'Mar 25, 2021');
         logicController.addTask(0, 'Jumanji', 'Use the edit and delete buttons to update your tasks', false, 'Jan 20, 2022');
-        logicController.addTask(0, 'Example Task: Click me!', 'Use the edit and delete buttons to update your tasks', false, 'Feb 13, 2020');
         logicController.addTask(0, 'Scoob', 'Use the edit and delete buttons to update your tasks', false, 'May 16, 2025');
+        logicController.addProject('test 2');
     }
 
     const materializeCollapsible = () => {
@@ -724,14 +732,80 @@ const DOMController = (() => {
           });
     }
 
+    const updateStorage = () => {
+        if (logicController.storageIsLocal) {
+            logicController.populateStorage();
+        }
+    }
+
+    const checkForStoredProjects = () => {
+        if (!localStorage.getItem('toDoProjects')) {
+            setTutorialProject();
+            logicController.populateStorage();
+        } else {
+            logicController.getProjectsFromLocalStorage();
+            logicController.setCurrentProject(0);
+        }
+    }
+
+    const checkLocalStoreCapability = () => {
+        if (logicController.storageAvailable('localStorage')) {
+            logicController.storageIsLocal = true;
+            console.log(logicController.storageIsLocal);
+            checkForStoredProjects();
+            console.log(logicController.projects);
+            console.log(JSON.parse(localStorage.getItem('toDoProjects')));
+            renderDOM();
+            var elem = M.Modal.getInstance(document.getElementById('storage-modal'))
+            elem.close();
+        } else {
+            M.toast({html: 'Sorry, no local storage capability.'});
+        }
+    }
   
-    
+    const storageModal = () => {
+        document.addEventListener('DOMContentLoaded', function() {
+            var elem = document.getElementById('storage-modal');
+            var instance = M.Modal.init(elem, {
+                dismissible: false
+            })
+            instance.open()
+        })
+    }
+
+    const localStorageEventListener = () => {
+        let localStorageButton = document.getElementById('local-storage-btn');
+        localStorageButton.addEventListener('click', checkLocalStoreCapability);
+    }
+
+
+    const initialLoad = () => {
+        materializeCollapsible(); 
+        materializeModal(); 
+        materializeSideNav();  
+        materializeCharacterCount();
+        materializeDatePicker();
+        storageModal();
+        localStorageEventListener();
+    }
 
     
     const renderDOM = () => {
+        renderProjectArea();
+        renderTaskArea();
+        renderAddTaskBtn();
+        displayCurrentProjectTitle();
+        addNewProjectEventListener();
+        addProjectModalEventListener();
+        addNewTaskEventListener();
+        cancelDeleteEventListener();
+        clearCompleteEventListener();
+    }
+
+    const renderNormal = () => {
         setTutorialProject();
         renderProjectArea();
-        renderTasks();
+        renderTaskArea();
         renderAddTaskBtn();
         displayCurrentProjectTitle();
         addNewProjectEventListener();
@@ -750,7 +824,9 @@ const DOMController = (() => {
     
 
     return {
-        renderDOM
+        initialLoad,
+        renderDOM,
+        renderNormal
     }
 
 })();
