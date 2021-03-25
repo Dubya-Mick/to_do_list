@@ -1,4 +1,5 @@
 import logicController from './logicController';
+import firebaseController from './firebaseController';
 import Collapsible from 'materialize-css';
 import Modal from 'materialize-css';
 import Toasts from 'materialize-css';
@@ -751,10 +752,7 @@ const DOMController = (() => {
     const checkLocalStoreCapability = () => {
         if (logicController.storageAvailable('localStorage')) {
             logicController.storageIsLocal = true;
-            console.log(logicController.storageIsLocal);
             checkForStoredProjects();
-            console.log(logicController.projects);
-            console.log(JSON.parse(localStorage.getItem('toDoProjects')));
             renderDOM();
             var elem = M.Modal.getInstance(document.getElementById('storage-modal'))
             elem.close();
@@ -773,9 +771,31 @@ const DOMController = (() => {
         })
     }
 
-    const localStorageEventListener = () => {
+    const storageEventListeners = () => {
         let localStorageButton = document.getElementById('local-storage-btn');
         localStorageButton.addEventListener('click', checkLocalStoreCapability);
+        let cloudStorageButton = document.getElementById('cloud-storage-btn');
+        cloudStorageButton.addEventListener('click', firebaseInit);
+    }
+
+    const firebaseInit = () => {
+        logicController.storageIsFirebase = true;
+        firebaseController.firebaseInit();
+        setTutorialProject()
+        renderDOM();
+        createSignInButton();
+        var elem = M.Modal.getInstance(document.getElementById('storage-modal'))
+        elem.close();
+    }
+
+    const createSignInButton = () => {
+        let signInIcon = document.createElement('i');
+        signInIcon.classList.add('material-icons', 'large');
+        signInIcon.textContent = 'account_circle';
+        let signInButton =document.getElementById('sign-in-btn');
+        signInButton.appendChild(signInIcon);
+        signInButton.addEventListener('click', firebaseController.signIn);
+
     }
 
 
@@ -786,7 +806,7 @@ const DOMController = (() => {
         materializeCharacterCount();
         materializeDatePicker();
         storageModal();
-        localStorageEventListener();
+        storageEventListeners();
     }
 
     

@@ -3,6 +3,7 @@ import { parse } from 'date-fns';
 const logicController = (() => {
 
     let storageIsLocal = false;
+    let storageIsFirebase = false;
 
     let currentProject = null;
     let currentTask = null;
@@ -195,6 +196,7 @@ const logicController = (() => {
     return {
         projects,
         storageIsLocal,
+        storageIsFirebase,
         setCurrentProject,
         getCurrentProjectIndex,
         getCurrentProjectTitle,

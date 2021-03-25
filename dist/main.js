@@ -16145,8 +16145,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => __WEBPACK_DEFAULT_EXPORT__
 /* harmony export */ });
 /* harmony import */ var _logicController__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./logicController */ "./src/logicController.js");
-/* harmony import */ var materialize_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! materialize-css */ "./node_modules/materialize-css/dist/js/materialize.js");
-/* harmony import */ var materialize_css__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(materialize_css__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _firebaseController__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./firebaseController */ "./src/firebaseController.js");
+/* harmony import */ var materialize_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! materialize-css */ "./node_modules/materialize-css/dist/js/materialize.js");
+/* harmony import */ var materialize_css__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(materialize_css__WEBPACK_IMPORTED_MODULE_2__);
+
 
 
 
@@ -16900,10 +16902,7 @@ const DOMController = (() => {
     const checkLocalStoreCapability = () => {
         if (_logicController__WEBPACK_IMPORTED_MODULE_0__.default.storageAvailable('localStorage')) {
             _logicController__WEBPACK_IMPORTED_MODULE_0__.default.storageIsLocal = true;
-            console.log(_logicController__WEBPACK_IMPORTED_MODULE_0__.default.storageIsLocal);
             checkForStoredProjects();
-            console.log(_logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects);
-            console.log(JSON.parse(localStorage.getItem('toDoProjects')));
             renderDOM();
             var elem = M.Modal.getInstance(document.getElementById('storage-modal'))
             elem.close();
@@ -16922,9 +16921,31 @@ const DOMController = (() => {
         })
     }
 
-    const localStorageEventListener = () => {
+    const storageEventListeners = () => {
         let localStorageButton = document.getElementById('local-storage-btn');
         localStorageButton.addEventListener('click', checkLocalStoreCapability);
+        let cloudStorageButton = document.getElementById('cloud-storage-btn');
+        cloudStorageButton.addEventListener('click', firebaseInit);
+    }
+
+    const firebaseInit = () => {
+        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.storageIsFirebase = true;
+        _firebaseController__WEBPACK_IMPORTED_MODULE_1__.default.firebaseInit();
+        setTutorialProject()
+        renderDOM();
+        createSignInButton();
+        var elem = M.Modal.getInstance(document.getElementById('storage-modal'))
+        elem.close();
+    }
+
+    const createSignInButton = () => {
+        let signInIcon = document.createElement('i');
+        signInIcon.classList.add('material-icons', 'large');
+        signInIcon.textContent = 'account_circle';
+        let signInButton =document.getElementById('sign-in-btn');
+        signInButton.appendChild(signInIcon);
+        signInButton.addEventListener('click', _firebaseController__WEBPACK_IMPORTED_MODULE_1__.default.signIn);
+
     }
 
 
@@ -16935,7 +16956,7 @@ const DOMController = (() => {
         materializeCharacterCount();
         materializeDatePicker();
         storageModal();
-        localStorageEventListener();
+        storageEventListeners();
     }
 
     
@@ -16984,6 +17005,59 @@ const DOMController = (() => {
 
 /***/ }),
 
+/***/ "./src/firebaseController.js":
+/*!***********************************!*\
+  !*** ./src/firebaseController.js ***!
+  \***********************************/
+/*! namespace exports */
+/*! export default [provided] [no usage info] [missing usage info prevents renaming] */
+/*! other exports [not provided] [no usage info] */
+/*! runtime requirements: __webpack_exports__, __webpack_require__.r, __webpack_require__.d, __webpack_require__.* */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => __WEBPACK_DEFAULT_EXPORT__
+/* harmony export */ });
+
+const firebaseController = (() => {
+
+    const firebaseInit = () => {
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        var firebaseConfig = {
+            apiKey: "AIzaSyC2wWd7HpkBruVM_15ECvd1QczL-5EdnIQ",
+            authDomain: "just-todo-it-c710c.firebaseapp.com",
+            projectId: "just-todo-it-c710c",
+            storageBucket: "just-todo-it-c710c.appspot.com",
+            messagingSenderId: "467014252687",
+            appId: "1:467014252687:web:e9feb182d68dbb3713d8fa"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    }
+
+    const signIn = () => {
+        var provider = new firebase.auth.GoogleAuthProvider();
+        firebase.auth().signInWithPopup(provider);
+    }
+
+    const signOut = () => {
+        firebase.auth().signOut();
+    }
+
+    return {
+        firebaseInit,
+        signIn
+    }
+
+})();
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (firebaseController);
+
+/***/ }),
+
 /***/ "./src/index.js":
 /*!**********************!*\
   !*** ./src/index.js ***!
@@ -17027,6 +17101,7 @@ __webpack_require__.r(__webpack_exports__);
 const logicController = (() => {
 
     let storageIsLocal = false;
+    let storageIsFirebase = false;
 
     let currentProject = null;
     let currentTask = null;
@@ -17219,6 +17294,7 @@ const logicController = (() => {
     return {
         projects,
         storageIsLocal,
+        storageIsFirebase,
         setCurrentProject,
         getCurrentProjectIndex,
         getCurrentProjectTitle,
