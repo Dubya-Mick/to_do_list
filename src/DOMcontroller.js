@@ -685,12 +685,7 @@ const DOMController = (() => {
     const setTutorialProject = () => {
         logicController.addProject('Example Project');
         logicController.setCurrentProject(0);
-        logicController.addTask(0, 'Example Task: Click me!', 'Use the edit and delete buttons to update your tasks', false, 'Feb 13, 2020');
-        logicController.addTask(0, 'Dump', 'Use the edit and delete buttons to update your tasks', false, 'Mar 26, 2021');
-        logicController.addTask(0, 'ECoom', 'Use the edit and delete buttons to update your tasks', false, 'Mar 25, 2021');
-        logicController.addTask(0, 'Jumanji', 'Use the edit and delete buttons to update your tasks', false, 'Jan 20, 2022');
-        logicController.addTask(0, 'Scoob', 'Use the edit and delete buttons to update your tasks', false, 'May 16, 2025');
-        logicController.addProject('test 2');
+        logicController.addTask(0, 'Example Task: Click me!', 'The left pane is for adding projects and this pane displays the tasks associated with an active project. Use the buttons to add, edit, and delete projects and tasks.', false, 'Feb 13, 2020');
     }
 
     const materializeCollapsible = () => {
@@ -770,17 +765,23 @@ const DOMController = (() => {
         })
     }
 
+    const demoMode = () => {
+        renderNormal();
+        var elem = M.Modal.getInstance(document.getElementById('storage-modal'));
+        elem.close();
+    }
+
     const storageEventListeners = () => {
-        let localStorageButton = document.getElementById('local-storage-btn');
-        localStorageButton.addEventListener('click', checkLocalStoreCapability);
-        let cloudStorageButton = document.getElementById('cloud-storage-btn');
-        cloudStorageButton.addEventListener('click', firebaseController.signIn);
+        document.getElementById('local-storage-btn').addEventListener('click', checkLocalStoreCapability);
+        document.getElementById('cloud-storage-btn').addEventListener('click', firebaseController.signIn);
         document.getElementById('sign-out').addEventListener('click', firebaseController.signOut);
+        document.getElementById('no-storage-btn').addEventListener('click', demoMode);
+
     }
 
 
     
-
+    //grabs projects from fire store on login state change 
     const authStateObserver = (user) => {
         let userNameElement = document.getElementById('user-name');
         let signOutButton = document.getElementById('sign-out');
@@ -804,18 +805,11 @@ const DOMController = (() => {
         }
     }
 
-
-
-    
-
-    
-
     const refreshAfterLogout = () => {
         clearDisplay(document.getElementById('sidenav-project-wrapper'));
         clearDisplay(document.getElementById('project-list'));
         clearDisplay(document.getElementById('task-list'));
         logicController.projects.length = 0;
-        logicController.storageIsFirebase = false;
         var elem = M.Modal.getInstance(document.getElementById('storage-modal'))
         elem.open();
     }
