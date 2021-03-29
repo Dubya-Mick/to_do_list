@@ -16835,12 +16835,7 @@ const DOMController = (() => {
     const setTutorialProject = () => {
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addProject('Example Project');
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.setCurrentProject(0);
-        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(0, 'Example Task: Click me!', 'Use the edit and delete buttons to update your tasks', false, 'Feb 13, 2020');
-        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(0, 'Dump', 'Use the edit and delete buttons to update your tasks', false, 'Mar 26, 2021');
-        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(0, 'ECoom', 'Use the edit and delete buttons to update your tasks', false, 'Mar 25, 2021');
-        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(0, 'Jumanji', 'Use the edit and delete buttons to update your tasks', false, 'Jan 20, 2022');
-        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(0, 'Scoob', 'Use the edit and delete buttons to update your tasks', false, 'May 16, 2025');
-        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addProject('test 2');
+        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.addTask(0, 'Example Task: Click me!', 'The left pane is for adding projects and this pane displays the tasks associated with an active project. Use the buttons to add, edit, and delete projects and tasks.', false, 'Feb 13, 2020');
     }
 
     const materializeCollapsible = () => {
@@ -16920,17 +16915,23 @@ const DOMController = (() => {
         })
     }
 
+    const demoMode = () => {
+        renderNormal();
+        var elem = M.Modal.getInstance(document.getElementById('storage-modal'));
+        elem.close();
+    }
+
     const storageEventListeners = () => {
-        let localStorageButton = document.getElementById('local-storage-btn');
-        localStorageButton.addEventListener('click', checkLocalStoreCapability);
-        let cloudStorageButton = document.getElementById('cloud-storage-btn');
-        cloudStorageButton.addEventListener('click', _firebaseController__WEBPACK_IMPORTED_MODULE_1__.default.signIn);
+        document.getElementById('local-storage-btn').addEventListener('click', checkLocalStoreCapability);
+        document.getElementById('cloud-storage-btn').addEventListener('click', _firebaseController__WEBPACK_IMPORTED_MODULE_1__.default.signIn);
         document.getElementById('sign-out').addEventListener('click', _firebaseController__WEBPACK_IMPORTED_MODULE_1__.default.signOut);
+        document.getElementById('no-storage-btn').addEventListener('click', demoMode);
+
     }
 
 
     
-
+    //grabs projects from fire store on login state change 
     const authStateObserver = (user) => {
         let userNameElement = document.getElementById('user-name');
         let signOutButton = document.getElementById('sign-out');
@@ -16954,18 +16955,11 @@ const DOMController = (() => {
         }
     }
 
-
-
-    
-
-    
-
     const refreshAfterLogout = () => {
         clearDisplay(document.getElementById('sidenav-project-wrapper'));
         clearDisplay(document.getElementById('project-list'));
         clearDisplay(document.getElementById('task-list'));
         _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects.length = 0;
-        _logicController__WEBPACK_IMPORTED_MODULE_0__.default.storageIsFirebase = false;
         var elem = M.Modal.getInstance(document.getElementById('storage-modal'))
         elem.open();
     }
