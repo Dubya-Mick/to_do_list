@@ -16943,8 +16943,6 @@ const DOMController = (() => {
             //unhide user name and sign out button DOM elements
             userNameElement.classList.remove('hide');
             signOutButton.classList.remove('hide');
-            //setTutorialProject();
-            //renderDOM();
             _firebaseController__WEBPACK_IMPORTED_MODULE_1__.default.getProjectsFromFirestore(user);
             var elem = M.Modal.getInstance(document.getElementById('storage-modal'));
             elem.close();
@@ -17015,7 +17013,8 @@ const DOMController = (() => {
         initialLoad,
         renderDOM,
         renderNormal,
-        authStateObserver
+        authStateObserver,
+        setTutorialProject
     }
 
 })();
@@ -17102,9 +17101,11 @@ const firebaseController = (() => {
                 _logicController__WEBPACK_IMPORTED_MODULE_1__.default.setCurrentProject(0);
                 _DOMcontroller__WEBPACK_IMPORTED_MODULE_0__.default.renderDOM();
             } else {
+                _DOMcontroller__WEBPACK_IMPORTED_MODULE_0__.default.setTutorialProject();
                 userProjectsRef.set({
                     projects: _logicController__WEBPACK_IMPORTED_MODULE_1__.default.projects
                 })
+                _DOMcontroller__WEBPACK_IMPORTED_MODULE_0__.default.renderDOM();
             }
         }).catch((error) => {
             console.log('error', error)
