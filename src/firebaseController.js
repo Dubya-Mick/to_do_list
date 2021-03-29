@@ -59,9 +59,11 @@ const firebaseController = (() => {
                 logicController.setCurrentProject(0);
                 DOMcontroller.renderDOM();
             } else {
+                DOMcontroller.setTutorialProject();
                 userProjectsRef.set({
                     projects: logicController.projects
                 })
+                DOMcontroller.renderDOM();
             }
         }).catch((error) => {
             console.log('error', error)

@@ -793,8 +793,6 @@ const DOMController = (() => {
             //unhide user name and sign out button DOM elements
             userNameElement.classList.remove('hide');
             signOutButton.classList.remove('hide');
-            //setTutorialProject();
-            //renderDOM();
             firebaseController.getProjectsFromFirestore(user);
             var elem = M.Modal.getInstance(document.getElementById('storage-modal'));
             elem.close();
@@ -865,7 +863,8 @@ const DOMController = (() => {
         initialLoad,
         renderDOM,
         renderNormal,
-        authStateObserver
+        authStateObserver,
+        setTutorialProject
     }
 
 })();
