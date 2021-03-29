@@ -1,3 +1,5 @@
+import DOMcontroller from './DOMcontroller';
+import logicController from './logicController';
 
 const firebaseController = (() => {
 
@@ -25,9 +27,68 @@ const firebaseController = (() => {
         firebase.auth().signOut();
     }
 
+    const initFirebaseAuth = () => {
+        firebase.auth().onAuthStateChanged(DOMcontroller.authStateObserver);
+    }
+
+    const getProfilePicUrl = () => {
+        return firebase.auth().currentUser.photoURL;
+    }
+
+    const getUserName = () => {
+        return firebase.auth().currentUser.displayName;
+    }
+
+    const isUserSignedIn = () => {
+        return !!firebase.auth().currentUser;
+    }
+
+    const getCurrentUserUID = () => {
+        return firebase.auth().currentUser.uid;
+    }
+
+    const getProjectsFromFirestore = (user) => {
+        let userProjectsRef = firebase.firestore().collection('users').doc(user.uid);
+        userProjectsRef.get().then((doc) => {
+            if (doc.exists) {
+                console.log(('document data:', doc.data()));
+                doc.data().projects.forEach((project) => {
+                    logicController.projects.push(project);
+                })
+                console.log(logicController.projects);
+                logicController.setCurrentProject(0);
+                DOMcontroller.renderDOM();
+            } else {
+                userProjectsRef.set({
+                    projects: logicController.projects
+                })
+            }
+        }).catch((error) => {
+            console.log('error', error)
+        })
+    }
+
+    const updateFirestore = () => {
+        let userProjectsRef = firebase.firestore().collection('users').doc(getCurrentUserUID());
+        userProjectsRef.get().then(() => {
+            userProjectsRef.set({
+                projects: logicController.projects
+            })
+        })
+        
+    }
+
     return {
         firebaseInit,
-        signIn
+        signIn,
+        signOut,
+        initFirebaseAuth,
+        getProfilePicUrl,
+        getUserName,
+        isUserSignedIn,
+        getCurrentUserUID,
+        getProjectsFromFirestore,
+        updateFirestore
     }
 
 })();

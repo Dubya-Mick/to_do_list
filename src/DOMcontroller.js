@@ -155,7 +155,7 @@ const DOMController = (() => {
             } else {
                 dueDate.textContent = "Due Date: None";
             }
-            console.log(logicController.projects[projectIndex].tasks[i].isComplete);
+            
             
 
             //logic to control display of already completed tasks
@@ -513,7 +513,7 @@ const DOMController = (() => {
         let taskTitleInput = document.getElementById('task-title-input').value;
         let taskNotesInput = document.getElementById('task-notes-input').value;
         let taskDueDate = document.getElementById('date-picker').value;
-        console.log(taskDueDate);
+        
         if (taskTitleInput.length < 1) {
             M.toast({html: 'The title of this task seems a little short!'});
         } else if (taskTitleInput.length > 30) {
@@ -675,9 +675,6 @@ const DOMController = (() => {
     }
 
 
-
-
-
     const clearDisplay = (parent) => {
         while (parent.firstChild) {
             parent.removeChild(parent.firstChild)
@@ -736,6 +733,8 @@ const DOMController = (() => {
     const updateStorage = () => {
         if (logicController.storageIsLocal) {
             logicController.populateStorage();
+        } else if (firebaseController.isUserSignedIn()) {
+            firebaseController.updateFirestore();
         }
     }
 
@@ -775,27 +774,50 @@ const DOMController = (() => {
         let localStorageButton = document.getElementById('local-storage-btn');
         localStorageButton.addEventListener('click', checkLocalStoreCapability);
         let cloudStorageButton = document.getElementById('cloud-storage-btn');
-        cloudStorageButton.addEventListener('click', firebaseInit);
+        cloudStorageButton.addEventListener('click', firebaseController.signIn);
+        document.getElementById('sign-out').addEventListener('click', firebaseController.signOut);
     }
 
-    const firebaseInit = () => {
-        logicController.storageIsFirebase = true;
-        firebaseController.firebaseInit();
-        setTutorialProject()
-        renderDOM();
-        createSignInButton();
+
+    
+
+    const authStateObserver = (user) => {
+        let userNameElement = document.getElementById('user-name');
+        let signOutButton = document.getElementById('sign-out');
+        //if user is signed in
+        if (user) {
+            //display user name and sign out button
+            let userName = firebaseController.getUserName();
+            userNameElement.textContent = userName;
+            //unhide user name and sign out button DOM elements
+            userNameElement.classList.remove('hide');
+            signOutButton.classList.remove('hide');
+            //setTutorialProject();
+            //renderDOM();
+            firebaseController.getProjectsFromFirestore(user);
+            var elem = M.Modal.getInstance(document.getElementById('storage-modal'));
+            elem.close();
+        } else {
+            userNameElement.classList.add('hide');
+            signOutButton.classList.add('hide');
+            refreshAfterLogout();
+        }
+    }
+
+
+
+    
+
+    
+
+    const refreshAfterLogout = () => {
+        clearDisplay(document.getElementById('sidenav-project-wrapper'));
+        clearDisplay(document.getElementById('project-list'));
+        clearDisplay(document.getElementById('task-list'));
+        logicController.projects.length = 0;
+        logicController.storageIsFirebase = false;
         var elem = M.Modal.getInstance(document.getElementById('storage-modal'))
-        elem.close();
-    }
-
-    const createSignInButton = () => {
-        let signInIcon = document.createElement('i');
-        signInIcon.classList.add('material-icons', 'large');
-        signInIcon.textContent = 'account_circle';
-        let signInButton =document.getElementById('sign-in-btn');
-        signInButton.appendChild(signInIcon);
-        signInButton.addEventListener('click', firebaseController.signIn);
-
+        elem.open();
     }
 
 
@@ -807,6 +829,8 @@ const DOMController = (() => {
         materializeDatePicker();
         storageModal();
         storageEventListeners();
+        firebaseController.firebaseInit();
+        firebaseController.initFirebaseAuth();
     }
 
     
@@ -846,7 +870,8 @@ const DOMController = (() => {
     return {
         initialLoad,
         renderDOM,
-        renderNormal
+        renderNormal,
+        authStateObserver
     }
 
 })();
