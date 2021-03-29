@@ -4,8 +4,15 @@ html, body {
 }
 
 
-#sign-in-btn {
+#user-wrapper {
     margin-right: 2rem;
+    width: 12rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+#sign-out {
+    cursor: pointer;
 }
 
 #to-do-main {
