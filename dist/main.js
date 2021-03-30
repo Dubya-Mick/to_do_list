@@ -16322,9 +16322,9 @@ const DOMController = (() => {
             taskTitle.classList.add('task-title');
             taskBody.classList.add('collapsible-body');
             taskText.classList.add('task-notes')
-            edtBtn.classList.add('waves-effect', 'waves-light', 'btn', 'modal-trigger');
+            edtBtn.classList.add('waves-effect', 'waves-light', 'btn', 'modal-trigger', 'task-btn');
             edtBtn.href = '#add-task-modal'; //link edit button to update task modal
-            dltBtn.classList.add('waves-effect', 'waves-light', 'btn', 'modal-trigger');
+            dltBtn.classList.add('waves-effect', 'waves-light', 'btn', 'modal-trigger', 'task-btn');
             dltBtn.href = '#delete-modal';
             edtIcon.classList.add('material-icons');
             dltIcon.classList.add('material-icons');
@@ -16334,7 +16334,7 @@ const DOMController = (() => {
             //add a little style to muh edit/delete buttons
             dltBtn.style.margin = '2px';
             edtBtn.style.margin = '2px';
-            edtDltWrapper.style.float = 'right';
+            edtDltWrapper.classList.add('edt-dlt-wrapper');
 
             //append icons to buttons, buttons to wrapper
             edtBtn.appendChild(edtIcon);

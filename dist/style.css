@@ -3,6 +3,23 @@ html, body {
     height: 100%;
 }
 
+@-ms-viewport{
+    width: device-width;
+}
+
+#logo {
+    font-size: 2rem;
+}
+
+
+@media only screen and (min-width: 995px) {
+    #logo {
+        margin-left: 5rem;
+    }
+}
+
+
+
 
 #user-wrapper {
     margin-right: 2rem;
@@ -11,11 +28,31 @@ html, body {
     justify-content: space-between;
 }
 
+@media only screen and (max-width: 560px) {
+    #user-wrapper {
+        margin-right: 3px;
+    }
+}
+
+@media only screen and (max-width: 380px) {
+    #user-name {
+        display: none;
+    }
+
+    #user-wrapper {
+        width: 5rem;
+    }
+}
+
+
+
 #sign-out {
     cursor: pointer;
 }
 
 #to-do-main {
+    width: 100%;
+    margin: 0 auto;
     display: grid;
     grid-template-columns: 0.2fr 1fr;
     height: 100%;
@@ -76,7 +113,7 @@ html, body {
 
 .collapsible-body {
     word-wrap: break-word;
-    
+    position: relative;
 }
 
 
@@ -102,6 +139,13 @@ html, body {
     justify-content: space-between;
     font-size: 1.2rem;
     
+}
+
+.edt-dlt-wrapper {
+    display: block;
+    position: absolute;
+    right: 1rem;
+    bottom: 0.5rem;
 }
 
 .sort-button {
@@ -136,7 +180,9 @@ html, body {
 }
 
 .task-notes {
-    max-width: 250px;
+    text-align: center;
+    margin-bottom: 2rem;
+    display: block;
 }
 
 .material-icons {
