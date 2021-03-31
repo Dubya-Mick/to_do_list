@@ -18,6 +18,10 @@
   },
   "homepage": "https://github.com/Dubya-Mick/to_do_list#readme",
   "devDependencies": {
+    "eslint": "^7.23.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "prettier": "^2.2.1",
     "webpack": "^5.2.0",
     "webpack-cli": "^4.1.0"
   },
