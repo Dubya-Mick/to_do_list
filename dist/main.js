@@ -16150,6 +16150,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _logicController__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./logicController */ "./src/logicController.js");
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-plusplus */
+/** @format */
 
 
 
@@ -16937,9 +16938,6 @@ const DOMController = (() => {
         renderDOM();
       } else {
         setTutorialProject();
-        userProjectsRef.set({
-          projects: _logicController__WEBPACK_IMPORTED_MODULE_2__.default.projects,
-        });
         renderDOM();
       }
     }).catch((error) => {
@@ -17028,6 +17026,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => __WEBPACK_DEFAULT_EXPORT__
 /* harmony export */ });
 /* harmony import */ var _logicController__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./logicController */ "./src/logicController.js");
+/** @format */
+
 
 
 const firebaseController = (() => {
@@ -17062,7 +17062,10 @@ const firebaseController = (() => {
   const getCurrentUserUID = () => firebase.auth().currentUser.uid;
 
   const updateFirestore = () => {
-    const userProjectsRef = firebase.firestore().collection('users').doc(getCurrentUserUID());
+    const userProjectsRef = firebase
+      .firestore()
+      .collection('users')
+      .doc(getCurrentUserUID());
     userProjectsRef.get().then(() => {
       userProjectsRef.set({
         projects: _logicController__WEBPACK_IMPORTED_MODULE_0__.default.projects,
@@ -17121,7 +17124,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => __WEBPACK_DEFAULT_EXPORT__
 /* harmony export */ });
 /* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parse/index.js");
-/* eslint-disable no-plusplus */
+/**
+ * /* eslint-disable no-plusplus
+ *
+ * @format
+ */
+
 
 
 const logicController = (() => {
@@ -17136,7 +17144,10 @@ const logicController = (() => {
   };
 
   const taskFactory = (title, notes, isComplete, dueDate) => ({
-    title, notes, isComplete, dueDate,
+    title,
+    notes,
+    isComplete,
+    dueDate,
   });
 
   const addProject = (title) => {
@@ -17168,7 +17179,9 @@ const logicController = (() => {
   const getCurrentTaskTitle = () => currentTask.title;
 
   const addTask = (projectIndex, title, notes, isComplete, dueDate) => {
-    projects[projectIndex].tasks.push(taskFactory(title, notes, isComplete, dueDate));
+    projects[projectIndex].tasks.push(
+      taskFactory(title, notes, isComplete, dueDate)
+    );
   };
 
   const editTaskTitle = (projectIndex, taskIndex, title) => {
@@ -17199,8 +17212,16 @@ const logicController = (() => {
     const projIndex = getCurrentProjectIndex();
     if (projects[projIndex].tasks.length > 1) {
       projects[projIndex].tasks = projects[projIndex].tasks.sort((a, b) => {
-        const aDate = (0,date_fns__WEBPACK_IMPORTED_MODULE_0__.default)(a.dueDate.replace(/,/g, ''), 'MMM d yyyy', new Date());
-        const bDate = (0,date_fns__WEBPACK_IMPORTED_MODULE_0__.default)(b.dueDate.replace(/,/g, ''), 'MMM d yyyy', new Date());
+        const aDate = (0,date_fns__WEBPACK_IMPORTED_MODULE_0__.default)(
+          a.dueDate.replace(/,/g, ''),
+          'MMM d yyyy',
+          new Date()
+        );
+        const bDate = (0,date_fns__WEBPACK_IMPORTED_MODULE_0__.default)(
+          b.dueDate.replace(/,/g, ''),
+          'MMM d yyyy',
+          new Date()
+        );
         return aDate.valueOf() - bDate.valueOf();
       });
     }
@@ -17210,8 +17231,16 @@ const logicController = (() => {
     const projIndex = getCurrentProjectIndex();
     if (projects[projIndex].tasks.length > 1) {
       projects[projIndex].tasks = projects[projIndex].tasks.sort((a, b) => {
-        const aDate = (0,date_fns__WEBPACK_IMPORTED_MODULE_0__.default)(a.dueDate.replace(/,/g, ''), 'MMM d yyyy', new Date());
-        const bDate = (0,date_fns__WEBPACK_IMPORTED_MODULE_0__.default)(b.dueDate.replace(/,/g, ''), 'MMM d yyyy', new Date());
+        const aDate = (0,date_fns__WEBPACK_IMPORTED_MODULE_0__.default)(
+          a.dueDate.replace(/,/g, ''),
+          'MMM d yyyy',
+          new Date()
+        );
+        const bDate = (0,date_fns__WEBPACK_IMPORTED_MODULE_0__.default)(
+          b.dueDate.replace(/,/g, ''),
+          'MMM d yyyy',
+          new Date()
+        );
         return bDate.valueOf() - aDate.valueOf();
       });
     }
@@ -17223,7 +17252,7 @@ const logicController = (() => {
       projects[projIndex].tasks = projects[projIndex].tasks.sort((a, b) => {
         const taskA = a.title.toLowerCase();
         const taskB = b.title.toLowerCase();
-        return (taskA < taskB) ? -1 : (taskA > taskB) ? 1 : 0;
+        return taskA < taskB ? -1 : taskA > taskB ? 1 : 0;
       });
     }
   };
@@ -17234,7 +17263,7 @@ const logicController = (() => {
       projects[projIndex].tasks = projects[projIndex].tasks.sort((a, b) => {
         const taskA = a.title.toLowerCase();
         const taskB = b.title.toLowerCase();
-        return (taskA > taskB) ? -1 : (taskA < taskB) ? 1 : 0;
+        return taskA > taskB ? -1 : taskA < taskB ? 1 : 0;
       });
     }
   };
@@ -17258,18 +17287,21 @@ const logicController = (() => {
       storage.removeItem(x);
       return true;
     } catch (e) {
-      return e instanceof DOMException && (
-      // everything except Firefox
-        e.code === 22
-                // Firefox
-                || e.code === 1014
-                // test name field too, because code might not be present
-                // everything except Firefox
-                || e.name === 'QuotaExceededError'
-                // Firefox
-                || e.name === 'NS_ERROR_DOM_QUOTA_REACHED')
-                // acknowledge QuotaExceededError only if there's something already stored
-                && (storage && storage.length !== 0);
+      return (
+        e instanceof DOMException &&
+        // everything except Firefox
+        (e.code === 22 ||
+          // Firefox
+          e.code === 1014 ||
+          // test name field too, because code might not be present
+          // everything except Firefox
+          e.name === 'QuotaExceededError' ||
+          // Firefox
+          e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+        // acknowledge QuotaExceededError only if there's something already stored
+        storage &&
+        storage.length !== 0
+      );
     }
   };
 

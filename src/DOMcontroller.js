@@ -788,9 +788,6 @@ const DOMController = (() => {
         renderDOM();
       } else {
         setTutorialProject();
-        userProjectsRef.set({
-          projects: logicController.projects,
-        });
         renderDOM();
       }
     }).catch((error) => {
