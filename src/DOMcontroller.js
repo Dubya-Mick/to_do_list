@@ -408,8 +408,7 @@ const DOMController = (() => {
   // updates deletion modal to reflect deletion of project
   const deleteProjectModalOpen = (e) => {
     const projectIndex = e.target.getAttribute('data-projNum');
-    logicController.setCurrentProject(projectIndex);
-    const projectTitle = logicController.getCurrentProjectTitle();
+    const projectTitle = logicController.projects[projectIndex].title;
     const deleteProjectHeader = document.getElementById('delete-modal-header');
     deleteProjectHeader.textContent = `Delete "${projectTitle}?"`;
     const deleteProjectButton = document.getElementById('delete-modal-btn');
@@ -755,7 +754,7 @@ const DOMController = (() => {
     firebase.auth().onAuthStateChanged(authStateObserver);
   };
 
-  // grabs projects from fire store on login state change
+  // handle login (display projects) and logout (clear display) state changes
   const authStateObserver = (user) => {
     const userNameElement = document.getElementById('user-name');
     const signOutButton = document.getElementById('sign-out');
@@ -778,6 +777,8 @@ const DOMController = (() => {
   };
 
   const getProjectsFromFirestore = (user) => {
+    const loadingSpinner = document.querySelector('.spinner');
+    loadingSpinner.style.display = 'block'; // display loading animation
     const userProjectsRef = firebase.firestore().collection('users').doc(user.uid);
     userProjectsRef.get().then((doc) => {
       if (doc.exists) {
@@ -785,13 +786,35 @@ const DOMController = (() => {
           logicController.projects.push(project);
         });
         logicController.setCurrentProject(0);
+        loadingSpinner.style.display = 'none';
         renderDOM();
       } else {
         setTutorialProject();
+        loadingSpinner.style.display = 'none';
         renderDOM();
       }
-    }).catch((error) => {
-      console.log('error', error);
+    }).catch(() => {
+      loadingSpinner.style.display = 'none';
+      throwErrorMessage();
+    });
+  };
+
+  const throwErrorMessage = () => {
+    const elem = document.getElementById('error-modal');
+    const errorModal = M.Modal.init(elem, {
+      dismissible: false,
+    });
+    errorRestart();
+    errorModal.open();
+  };
+
+  const errorRestart = () => {
+    const restartButton = document.getElementById('error-btn');
+    restartButton.addEventListener('click', () => {
+      firebaseController.signOut();
+      const errorModal = M.Modal.getInstance(document.getElementById('error-modal'));
+      errorModal.close();
+      refreshAfterLogout();
     });
   };
 
