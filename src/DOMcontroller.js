@@ -268,43 +268,42 @@ const DOMController = (() => {
   const renderSortBar = () => {
     if (document.querySelector('#sort-bar')) {
       return;
-    } else {
-      const taskArea = document.getElementById('task-area');
-
-      const sortBar = document.createElement('div');
-      sortBar.setAttribute('id', 'sort-bar');
-
-      const clearComplete = document.createElement('a');
-      clearComplete.href = '#complete-modal';
-      clearComplete.setAttribute('id', 'clear-complete');
-      clearComplete.classList.add('sort-button', 'modal-trigger');
-      clearComplete.textContent = 'Clear Completed';
-      clearComplete.href = '#complete-modal';
-
-      const alphaSort = document.createElement('a');
-      alphaSort.setAttribute('id', 'alpha-sort');
-      alphaSort.classList.add('sort-button');
-      alphaSort.textContent = 'A-Z';
-      alphaSort.addEventListener('click', sortAtoZ);
-
-      const dateSort = document.createElement('a');
-      dateSort.setAttribute('id', 'date-sort');
-      dateSort.classList.add('sort-button');
-      dateSort.textContent = 'Date';
-      dateSort.addEventListener('click', () => {
-        sortByDate();
-      });
-
-      const dateSortIcon = document.createElement('i');
-      dateSortIcon.classList.add('material-icons', 'right', 'date-icon');
-      dateSortIcon.textContent = 'keyboard_arrow_down';
-      dateSort.appendChild(dateSortIcon);
-
-      sortBar.appendChild(clearComplete);
-      sortBar.appendChild(alphaSort);
-      sortBar.appendChild(dateSort);
-      taskArea.insertBefore(sortBar, taskArea.childNodes[2]);
     }
+    const taskArea = document.getElementById('task-area');
+
+    const sortBar = document.createElement('div');
+    sortBar.setAttribute('id', 'sort-bar');
+
+    const clearComplete = document.createElement('a');
+    clearComplete.href = '#complete-modal';
+    clearComplete.setAttribute('id', 'clear-complete');
+    clearComplete.classList.add('sort-button', 'modal-trigger');
+    clearComplete.textContent = 'Clear Completed';
+    clearComplete.href = '#complete-modal';
+
+    const alphaSort = document.createElement('a');
+    alphaSort.setAttribute('id', 'alpha-sort');
+    alphaSort.classList.add('sort-button');
+    alphaSort.textContent = 'A-Z';
+    alphaSort.addEventListener('click', sortAtoZ);
+
+    const dateSort = document.createElement('a');
+    dateSort.setAttribute('id', 'date-sort');
+    dateSort.classList.add('sort-button');
+    dateSort.textContent = 'Date';
+    dateSort.addEventListener('click', () => {
+      sortByDate();
+    });
+
+    const dateSortIcon = document.createElement('i');
+    dateSortIcon.classList.add('material-icons', 'right', 'date-icon');
+    dateSortIcon.textContent = 'keyboard_arrow_down';
+    dateSort.appendChild(dateSortIcon);
+
+    sortBar.appendChild(clearComplete);
+    sortBar.appendChild(alphaSort);
+    sortBar.appendChild(dateSort);
+    taskArea.insertBefore(sortBar, taskArea.childNodes[2]);
   };
 
   // updates project modal window to reflect editing mode
@@ -357,8 +356,7 @@ const DOMController = (() => {
   const editProjectModalOpen = (e) => {
     // change add project modal to reflect edit mode
     const projectIndex = e.target.getAttribute('data-projNum');
-    logicController.setCurrentProject(projectIndex);
-    const projectTitle = logicController.getCurrentProjectTitle();
+    const projectTitle = logicController.projects[projectIndex].title;
     const projectModalHeader = document.getElementById('project-modal-header');
     projectModalHeader.textContent = 'Edit Project';
     const projectTitleInput = document.getElementById('proj-title-input');
@@ -391,7 +389,7 @@ const DOMController = (() => {
 
   // add event listener for closure of modal window if no deletion
   // desired for clear complete and normal delete
-  const cancelDeleteEventListener = () => {
+  const cancelEventListeners = () => {
     const cancelDelButton = document.getElementById('cancel-delete-btn');
     cancelDelButton.addEventListener('click', () => {
       const modalInstance = M.Modal.getInstance(document.getElementById('delete-modal'));
@@ -401,6 +399,18 @@ const DOMController = (() => {
     const cancelClearButton = document.getElementById('cancel-clear-btn');
     cancelClearButton.addEventListener('click', () => {
       const modalInstance = M.Modal.getInstance(document.getElementById('complete-modal'));
+      modalInstance.close();
+    });
+
+    const cancelAddEditProj = document.getElementById('cancel-add-proj');
+    cancelAddEditProj.addEventListener('click', () => {
+      const modalInstance = M.Modal.getInstance(document.getElementById('add-proj-modal'));
+      modalInstance.close();
+    });
+
+    const cancelAddEditTask = document.getElementById('cancel-add-task');
+    cancelAddEditTask.addEventListener('click', () => {
+      const modalInstance = M.Modal.getInstance(document.getElementById('add-task-modal'));
       modalInstance.close();
     });
   };
@@ -847,7 +857,7 @@ const DOMController = (() => {
     addNewProjectEventListener();
     addProjectModalEventListener();
     addNewTaskEventListener();
-    cancelDeleteEventListener();
+    cancelEventListeners();
     clearCompleteEventListener();
   };
 
@@ -860,7 +870,7 @@ const DOMController = (() => {
     addNewProjectEventListener();
     addProjectModalEventListener();
     addNewTaskEventListener();
-    cancelDeleteEventListener();
+    cancelEventListeners();
     materializeCollapsible();
     materializeModal();
     materializeSideNav();
