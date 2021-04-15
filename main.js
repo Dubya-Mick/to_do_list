@@ -16537,31 +16537,13 @@ const DOMController = (() => {
     }
   };
 
-  // add event listener for closure of modal window if no deletion
-  // desired for clear complete and normal delete
-  const cancelEventListeners = () => {
-    const cancelDelButton = document.getElementById('cancel-delete-btn');
-    cancelDelButton.addEventListener('click', () => {
-      const modalInstance = M.Modal.getInstance(document.getElementById('delete-modal'));
-      modalInstance.close();
-    });
-
-    const cancelClearButton = document.getElementById('cancel-clear-btn');
-    cancelClearButton.addEventListener('click', () => {
-      const modalInstance = M.Modal.getInstance(document.getElementById('complete-modal'));
-      modalInstance.close();
-    });
-
-    const cancelAddEditProj = document.getElementById('cancel-add-proj');
-    cancelAddEditProj.addEventListener('click', () => {
-      const modalInstance = M.Modal.getInstance(document.getElementById('add-proj-modal'));
-      modalInstance.close();
-    });
-
-    const cancelAddEditTask = document.getElementById('cancel-add-task');
-    cancelAddEditTask.addEventListener('click', () => {
-      const modalInstance = M.Modal.getInstance(document.getElementById('add-task-modal'));
-      modalInstance.close();
+  const cancelButtonEventListeners = () => {
+    const cancelButtonArray = [...document.querySelectorAll('.cancel-modal-btn')];
+    cancelButtonArray.forEach((cancelButton) => {
+      cancelButton.addEventListener('click', () => {
+        let modal = M.Modal.getInstance(cancelButton.closest('.modal'));
+        modal.close();
+      });
     });
   };
 
@@ -16770,7 +16752,7 @@ const DOMController = (() => {
       checkBoxLabel.textContent = 'Complete?';
     }
   };
-
+  // sort tasks by date
   const sortByDate = () => {
     const dateSortIcon = document.querySelector('.date-icon');
     if (dateSortIcon.textContent == 'keyboard_arrow_down') {
@@ -16783,7 +16765,7 @@ const DOMController = (() => {
       dateSortIcon.textContent = 'keyboard_arrow_down';
     }
   };
-
+  // sort tasks alphabetically
   const sortAtoZ = () => {
     const alphaSortButton = document.getElementById('alpha-sort');
     if (alphaSortButton.textContent == 'A-Z') {
@@ -16819,44 +16801,7 @@ const DOMController = (() => {
     _logicController__WEBPACK_IMPORTED_MODULE_2__.default.setCurrentProject(0);
     _logicController__WEBPACK_IMPORTED_MODULE_2__.default.addTask(0, 'Example Task: Click me!', 'The left pane is for adding projects and this pane displays the tasks associated with an active project. Use the buttons to add, edit, and delete projects and tasks.', false, 'Feb 13, 2020');
   };
-
-  const materializeCollapsible = () => {
-    document.addEventListener('DOMContentLoaded', () => {
-      const elems = document.querySelectorAll('.collapsible');
-      M.Collapsible.init(elems, true);
-    });
-  };
-
-  const materializeModal = () => {
-    document.addEventListener('DOMContentLoaded', () => {
-      const elems = document.querySelectorAll('.modal');
-      M.Modal.init(elems, true);
-    });
-  };
-
-  const materializeSideNav = () => {
-    document.addEventListener('DOMContentLoaded', () => {
-      const elems = document.querySelectorAll('.sidenav');
-      M.Sidenav.init(elems, true);
-    });
-  };
-
-  const materializeCharacterCount = () => {
-    document.addEventListener('DOMContentLoaded', () => {
-      const textNeedCount = document.querySelectorAll('#proj-title-input, #task-title-input, #task-notes-input');
-      M.CharacterCounter.init(textNeedCount);
-    });
-  };
-
-  const materializeDatePicker = () => {
-    document.addEventListener('DOMContentLoaded', () => {
-      const elems = document.querySelectorAll('.datepicker');
-      M.Datepicker.init(elems, {
-        container: document.getElementsByTagName('body'), // sets container div for date picker
-      });
-    });
-  };
-
+  // update local or firebase storage depending on the case
   const updateStorage = () => {
     if (_logicController__WEBPACK_IMPORTED_MODULE_2__.default.storageIsLocal) {
       _logicController__WEBPACK_IMPORTED_MODULE_2__.default.populateStorage();
@@ -16865,6 +16810,7 @@ const DOMController = (() => {
     }
   };
 
+  // check if user has projects stored in local storage
   const checkForStoredProjects = () => {
     if (!localStorage.getItem('toDoProjects')) {
       setTutorialProject();
@@ -16875,6 +16821,7 @@ const DOMController = (() => {
     }
   };
 
+  // check if local storage is avilable 
   const checkLocalStoreCapability = () => {
     if (_logicController__WEBPACK_IMPORTED_MODULE_2__.default.storageAvailable('localStorage')) {
       _logicController__WEBPACK_IMPORTED_MODULE_2__.default.storageIsLocal = true;
@@ -16887,6 +16834,7 @@ const DOMController = (() => {
     }
   };
 
+  // open the modal for choice of storage method on load
   const storageModal = () => {
     document.addEventListener('DOMContentLoaded', () => {
       const elem = document.getElementById('storage-modal');
@@ -16897,6 +16845,7 @@ const DOMController = (() => {
     });
   };
 
+  // display the simple no-save demo
   const demoMode = () => {
     renderNormal();
     const elem = M.Modal.getInstance(document.getElementById('storage-modal'));
@@ -16987,12 +16936,46 @@ const DOMController = (() => {
     elem.open();
   };
 
+  // initialize materialize components 
+  const initMaterialize = () => {
+    document.addEventListener('DOMContentLoaded', () => {
+      const elems = document.querySelectorAll('.collapsible');
+      M.Collapsible.init(elems, true);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const elems = document.querySelectorAll('.modal');
+      M.Modal.init(elems, true);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const elems = document.querySelectorAll('.sidenav');
+      M.Sidenav.init(elems, true);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const textNeedCount = document.querySelectorAll('#proj-title-input, #task-title-input, #task-notes-input');
+      M.CharacterCounter.init(textNeedCount);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const elems = document.querySelectorAll('.datepicker');
+      M.Datepicker.init(elems, {
+        container: document.getElementsByTagName('body'), // sets container div for date picker
+      });
+    });
+  };
+
+  const initEventListeners = () => {
+    addNewProjectEventListener();
+    addProjectModalEventListener();
+    addNewTaskEventListener();
+    cancelButtonEventListeners();
+    clearCompleteEventListener();
+  };
+
   const initialLoad = () => {
-    materializeCollapsible();
-    materializeModal();
-    materializeSideNav();
-    materializeCharacterCount();
-    materializeDatePicker();
+    initMaterialize();
     storageModal();
     storageEventListeners();
     _firebaseController__WEBPACK_IMPORTED_MODULE_1__.default.firebaseInit();
@@ -17004,11 +16987,7 @@ const DOMController = (() => {
     renderTaskArea();
     renderAddTaskBtn();
     displayCurrentProjectTitle();
-    addNewProjectEventListener();
-    addProjectModalEventListener();
-    addNewTaskEventListener();
-    cancelEventListeners();
-    clearCompleteEventListener();
+    initEventListeners();
   };
 
   const renderNormal = () => {
@@ -17017,24 +16996,11 @@ const DOMController = (() => {
     renderTaskArea();
     renderAddTaskBtn();
     displayCurrentProjectTitle();
-    addNewProjectEventListener();
-    addProjectModalEventListener();
-    addNewTaskEventListener();
-    cancelEventListeners();
-    materializeCollapsible();
-    materializeModal();
-    materializeSideNav();
-    materializeCharacterCount();
-    materializeDatePicker();
-    clearCompleteEventListener();
+    initEventListeners();
   };
 
   return {
     initialLoad,
-    renderDOM,
-    renderNormal,
-    authStateObserver,
-    setTutorialProject,
   };
 })();
 
