@@ -14,7 +14,7 @@
  <body>
 
 
-   <nav>
+   <nav id="nav">
       <div class="nav-wrapper teal accent-4">
         <a id="logo" href="#" class="center-align">Just ToDo It</a>
         <ul id="nav-mobile" class="left">
@@ -26,12 +26,12 @@
         </ul>
       </div>
     </nav>
-
+    <!-- Materialize sidenav -->
    <ul id="slide-out" class="sidenav">
       <div id="sidenav-project-wrapper"></div>
       <a id="sidenav-modal-addproj-btn" class="waves-effect waves-light btn modal-trigger" href="#add-proj-modal"><i class="material-icons left">add</i>Add Project</a>
    </ul>
-    
+    <!-- Materialize sidenav -->
  
    <div id="to-do-main">
       <div id="project-area" class="col s3 hide-on-med-and-down z-depth-2">
@@ -142,15 +142,28 @@
     <!-- Begin Storage Modal -->
     <div id="storage-modal" class="modal">
       <div class="modal-content">
-        <h4 class="center-align" id="storage-modal-header">How would you like to store your ToDo List?</h4>
+        <h4 class="center-align" id="storage-modal-header">How would you like to access your ToDo List?</h4>
           <div class="center-align">
-            <a href="#!" class="waves-effect waves-green btn" id="local-storage-btn">On Your Computer</a> 
-            <a href="#!" class="waves-effect waves-green btn" id="cloud-storage-btn">In the Cloud</a>
-            <a href="#!" class="waves-effect waves-green btn" id="no-storage-btn">None: Just a Demo</a>
+            <a href="#!" class="waves-effect waves-green btn storage-btn" id="local-storage-btn">From this computer</a> 
+            <a href="#!" class="waves-effect waves-green btn storage-btn" id="cloud-storage-btn">From my google account</a>
+            <a href="#!" class="waves-effect waves-green btn storage-btn" id="no-storage-btn">None: Just a Demo</a>
           </div>
       </div>
     </div>
     <!-- End Storage Modal -->
+
+    <!-- Begin Error Modal -->
+    <div id="error-modal" class="modal">
+      <div class="modal-content">
+        <h4 class="center-align" id="error-modal-header">Error communicating with Firebase, oh no!</h4>
+          <div class="center-align">
+            <a href="#!" class="waves-effect waves-green btn" id="error-btn">Restart</a> 
+          </div>
+      </div>
+    </div>
+    <!-- End Error Modal -->   
+    
+    <div class="spinner"></div>
 
   
 
